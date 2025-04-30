@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Финансовая аналитика</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header>
+  <h1>Мои Финансы</h1>
+  <div class="header-controls">
+    <div class="theme-switch-container">
+      <span class="theme-switch-label">Тёмная тема</span>
+      <label class="theme-switch">
+        <input type="checkbox" id="theme-toggle">
+        <span class="slider round"></span>
+      </label>
+    </div>
+    <button id="settings-btn" class="neumorphic-btn">Дополнительно ▼</button>
+    <div id="settings-menu" class="neumorphic-menu">
+      <button id="year-summary-btn" class="neumorphic-btn">Годовой отчёт</button>
+      <div class="currency-toggle">
+        <span>Рубли</span>
+        <label class="switch">
+          <input type="checkbox" id="currency-toggle">
+          <span class="slider round"></span>
+        </label>
+        <span>Доллары</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="month-selector">
+  <div class="month-tabs">
+    <button class="month-tab neumorphic-btn active" data-month="0">Янв</button>
+    <button class="month-tab neumorphic-btn" data-month="1">Фев</button>
+    <button class="month-tab neumorphic-btn" data-month="2">Мар</button>
+    <button class="month-tab neumorphic-btn" data-month="3">Апр</button>
+    <button class="month-tab neumorphic-btn" data-month="4">Май</button>
+    <button class="month-tab neumorphic-btn" data-month="5">Июн</button>
+    <button class="month-tab neumorphic-btn" data-month="6">Июл</button>
+    <button class="month-tab neumorphic-btn" data-month="7">Авг</button>
+    <button class="month-tab neumorphic-btn" data-month="8">Сен</button>
+    <button class="month-tab neumorphic-btn" data-month="9">Окт</button>
+    <button class="month-tab neumorphic-btn" data-month="10">Ноя</button>
+    <button class="month-tab neumorphic-btn" data-month="11">Дек</button>
+  </div>
+</section>
+
+    <section class="inputs">
+      <div class="input-group">
+        <input type="number" id="income-input" placeholder="Доход ₽" class="no-spinners neumorphic-input" />
+        <button id="add-income-btn" class="neumorphic-btn">Добавить доход</button>
+        
+        <div class="category-selector">
+          <button id="category-btn" class="neumorphic-btn">Категории ▼</button>
+          <div id="category-menu" class="neumorphic-menu">
+            <input type="text" id="new-category-input" placeholder="Новая категория" class="neumorphic-input" />
+            <button id="add-category-btn" class="neumorphic-btn small">+ Добавить</button>
+            <div id="categories-list" class="categories-list"></div>
+          </div>
+        </div>
+        
+        <button id="capitalization-btn" class="neumorphic-btn">Капитализация</button>
+      </div>
+    </section>
+
+    <section class="summary">
+      <div class="neumorphic-card"><h2>Доход</h2><p id="income">0 ₽</p></div>
+      <div class="neumorphic-card"><h2>Расход</h2><p id="expense">0 ₽</p></div>
+      <div class="neumorphic-card"><h2>Остаток</h2><p id="percent">0%</p></div>
+      <div class="neumorphic-card"><h2>Капитализация</h2><p id="capital-display">0 ₽</p></div>
+    </section>
+    
+    <div id="capitalization-menu" class="neumorphic-menu">
+      <h3>Капитализация</h3>
+      <input type="number" id="capital-input" placeholder="Сумма активов" class="neumorphic-input" />
+      <div class="button-group">
+        <button id="save-capital-btn" class="neumorphic-btn primary">Сохранить</button>
+        <button id="cancel-capital-btn" class="neumorphic-btn">Отмена</button>
+      </div>
+      <div class="chart-container">
+        <canvas id="capitalChart"></canvas>
+      </div>
+    </div>
+
+    <section class="widgets" id="widgets"></section>
+    
+    <section class="charts">
+      <div class="chart-container">
+        <canvas id="barChart"></canvas>
+      </div>
+    </section>
+
+    <div id="year-summary" class="neumorphic-menu year-summary">
+      <h2>Годовой отчёт</h2>
+      <div class="chart-container">
+        <canvas id="yearIncomeChart"></canvas>
+      </div>
+      <div class="chart-container">
+        <canvas id="yearExpenseChart"></canvas>
+      </div>
+      <div class="chart-container">
+        <canvas id="yearCapitalChart"></canvas>
+      </div>
+      <button id="close-year-summary" class="neumorphic-btn">Закрыть</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
