@@ -625,9 +625,10 @@ body.dark .currency-toggle {
 }
 
 .month-tabs {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 5px;
+  justify-content: center;
 }
 
 .month-tab {
@@ -703,25 +704,39 @@ body.dark {
   width: 100%;
 }
 
-@media (min-width: 768px) {
-  .month-tabs {
-    grid-template-columns: repeat(12, 1fr);
+/* Горизонтальная ориентация на мобильных устройствах */
+@media screen and (min-width: 768px) and (orientation: landscape) {
+  .app {
+    padding: 15px;
   }
   
   .summary {
     grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
   }
   
   .widgets {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+  }
+  
+  .month-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    justify-content: flex-start;
+  }
+  
+  .month-tab {
+    flex-shrink: 0;
+  }
+  
+  .chart-container {
+    height: 350px;
   }
   
   .analytics-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .neumorphic-menu {
-    min-width: 250px;
   }
 }
 
@@ -741,5 +756,21 @@ body.dark {
   
   .analytics-grid {
     grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .month-tabs {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .month-tab {
+    flex-shrink: 1;
+  }
+}
+
+/* Вертикальная ориентация на планшетах */
+@media (min-width: 768px) and (orientation: portrait) {
+  .month-tabs {
+    grid-template-columns: repeat(6, 1fr);
   }
 }
