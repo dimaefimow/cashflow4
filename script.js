@@ -393,7 +393,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Create gradient for each bar
     const backgroundColors = categoryNames.map((_, index) => {
       const color = categoryColors[index % categoryColors.length];
-      const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+      const gradient = ctx.createLinearGradient(0, 0, 0, 300);
       gradient.addColorStop(0, color);
       gradient.addColorStop(1, shadeColor(color, -40));
       return gradient;
@@ -409,7 +409,7 @@ document.addEventListener('DOMContentLoaded', function() {
           backgroundColor: backgroundColors,
           borderColor: document.body.classList.contains('dark') ? '#2e2e2e' : '#e0e5ec',
           borderWidth: 2,
-          borderRadius: 10,
+          borderRadius: 8,
           borderSkipped: false,
         }]
       },
@@ -451,7 +451,7 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         },
         animation: {
-          duration: 1000,
+          duration: 800,
           easing: 'easeOutQuart'
         }
       }
@@ -479,12 +479,12 @@ document.addEventListener('DOMContentLoaded', function() {
           data: [capitalValue],
           backgroundColor: '#3498db33',
           borderColor: '#3498db',
-          borderWidth: 3,
+          borderWidth: 2,
           tension: 0.3,
           fill: true,
           pointBackgroundColor: '#3498db',
-          pointRadius: 5,
-          pointHoverRadius: 7
+          pointRadius: 4,
+          pointHoverRadius: 6
         }]
       },
       options: {
@@ -523,7 +523,7 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         },
         animation: {
-          duration: 1000,
+          duration: 800,
           easing: 'easeOutQuart'
         }
       }
@@ -610,12 +610,12 @@ document.addEventListener('DOMContentLoaded', function() {
             data: capitalData,
             backgroundColor: 'rgba(52, 152, 219, 0.2)',
             borderColor: 'rgba(52, 152, 219, 1)',
-            borderWidth: 3,
+            borderWidth: 2,
             tension: 0.3,
             fill: true,
             pointBackgroundColor: 'rgba(52, 152, 219, 1)',
-            pointRadius: 5,
-            pointHoverRadius: 7
+            pointRadius: 4,
+            pointHoverRadius: 6
           }]
         },
         options: createYearChartOptions('Капитализация по месяцам')
@@ -632,7 +632,7 @@ document.addEventListener('DOMContentLoaded', function() {
           display: true,
           text: title,
           font: {
-            size: 16
+            size: 14
           },
           color: document.body.classList.contains('dark') ? '#eee' : '#333'
         },
@@ -670,7 +670,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       },
       animation: {
-        duration: 1000,
+        duration: 800,
         easing: 'easeOutQuart'
       }
     };
