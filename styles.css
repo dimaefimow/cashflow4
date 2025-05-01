@@ -16,7 +16,6 @@ body {
   margin: 0;
   padding: 0;
   transition: var(--transition);
-  font-size: 14px;
 }
 
 .app {
@@ -26,24 +25,40 @@ body {
 }
 
 header {
-  margin-bottom: 15px;
-}
-
-.header-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
+  position: relative;
 }
 
-.header-controls {
+.header-left {
   display: flex;
-  justify-content: flex-end;
+  gap: 8px;
+  order: 1;
 }
 
-h1 {
-  font-size: 1.5rem;
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  order: 3;
+}
+
+header h1 {
   margin: 0;
+  font-size: 1.5rem;
+  order: 2;
+  flex: 1;
+  text-align: center;
+}
+
+#fullscreen-btn {
+  font-size: 1.2rem;
+  padding: 8px 12px;
+  min-width: 40px;
 }
 
 .inputs, .summary, .widgets, .charts, .analytics {
@@ -52,13 +67,8 @@ h1 {
 
 .input-group {
   display: flex;
-  flex-direction: column;
   gap: 10px;
-}
-
-.input-row {
-  display: flex;
-  gap: 10px;
+  align-items: center;
 }
 
 .neumorphic-btn {
@@ -75,24 +85,19 @@ h1 {
   transition: var(--transition);
   position: relative;
   overflow: hidden;
-}
-
-.neumorphic-btn.small {
-  padding: 8px 12px;
-  font-size: 0.8rem;
-  border-radius: 10px;
+  white-space: nowrap;
 }
 
 .neumorphic-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 7px 7px 15px var(--shadow-dark), 
-              -7px -7px 15px var(--shadow-light);
+  box-shadow: 8px 8px 15px var(--shadow-dark), 
+              -8px -8px 15px var(--shadow-light);
 }
 
 .neumorphic-btn:active {
   transform: translateY(0);
-  box-shadow: inset 2px 2px 5px var(--shadow-dark), 
-              inset -2px -2px 5px var(--shadow-light);
+  box-shadow: inset 3px 3px 6px var(--shadow-dark), 
+              inset -3px -3px 6px var(--shadow-light);
 }
 
 .neumorphic-btn.primary {
@@ -102,6 +107,11 @@ h1 {
 
 .neumorphic-btn.primary:hover {
   background: var(--primary-hover);
+}
+
+.neumorphic-btn.small {
+  padding: 8px 12px;
+  font-size: 0.8rem;
 }
 
 .neumorphic-input {
@@ -117,12 +127,6 @@ h1 {
   box-sizing: border-box;
 }
 
-.neumorphic-input.small {
-  padding: 8px 10px;
-  font-size: 0.8rem;
-  border-radius: 10px;
-}
-
 .neumorphic-input:focus {
   outline: none;
   box-shadow: inset 5px 5px 10px var(--shadow-dark), 
@@ -132,39 +136,29 @@ h1 {
 .neumorphic-card {
   background: var(--bg);
   border-radius: 15px;
-  padding: 15px;
+  padding: 12px;
   margin: 5px;
-  box-shadow: 7px 7px 15px var(--shadow-dark), 
-              -7px -7px 15px var(--shadow-light);
+  box-shadow: 5px 5px 10px var(--shadow-dark), 
+              -5px -5px 10px var(--shadow-light);
   transition: var(--transition);
-}
-
-.neumorphic-card.small {
-  padding: 10px;
-  border-radius: 12px;
-  margin: 3px;
 }
 
 .neumorphic-card:hover {
   transform: translateY(-3px);
-  box-shadow: 10px 10px 20px var(--shadow-dark), 
-              -10px -10px 20px var(--shadow-light);
+  box-shadow: 8px 8px 15px var(--shadow-dark), 
+              -8px -8px 15px var(--shadow-light);
 }
 
 .neumorphic-menu {
   display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 400px;
+  position: absolute;
   background: var(--bg);
   border-radius: 15px;
   padding: 15px;
-  box-shadow: 7px 7px 20px var(--shadow-dark), 
-              -7px -7px 20px var(--shadow-light);
-  z-index: 1000;
+  box-shadow: 8px 8px 20px var(--shadow-dark), 
+              -8px -8px 20px var(--shadow-light);
+  z-index: 10;
+  min-width: 200px;
 }
 
 .neumorphic-menu.show {
@@ -172,101 +166,13 @@ h1 {
   animation: fadeIn 0.3s ease-out;
 }
 
-#category-menu {
-  max-height: 70vh;
-  overflow-y: auto;
-}
-
 #capitalization-menu {
-  max-width: 500px;
-}
-
-.month-details {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 90%;
-  max-width: 500px;
-  max-height: 80vh;
-  overflow-y: auto;
-  z-index: 100;
-  display: none;
-}
-
-.month-details.show {
-  display: block;
-  animation: fadeIn 0.3s ease-out;
-}
-
-.month-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin: 15px 0;
-}
-
-.stat-card {
-  background: var(--bg);
-  padding: 10px;
-  border-radius: 12px;
-  box-shadow: 3px 3px 6px var(--shadow-dark), 
-              -3px -3px 6px var(--shadow-light);
-  text-align: center;
-  flex: 1;
-  min-width: 100px;
-}
-
-.month-categories {
-  margin: 15px 0;
-}
-
-.categories-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.category-card {
-  background: var(--bg);
-  padding: 10px;
-  border-radius: 12px;
-  box-shadow: 3px 3px 6px var(--shadow-dark), 
-              -3px -3px 6px var(--shadow-light);
-  position: relative;
-}
-
-.category-card h5 {
-  margin: 0 0 5px 0;
-  color: var(--widget-color);
-  font-size: 0.9rem;
-}
-
-.category-card p {
-  margin: 0;
-  font-weight: bold;
-  font-size: 0.9rem;
-}
-
-.category-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 12px;
-  box-shadow: 0 0 8px 2px var(--widget-color);
-  opacity: 0.3;
-  z-index: -1;
-}
-
-.button-group {
-  display: flex;
-  gap: 8px;
-  margin-top: 10px;
-  justify-content: flex-end;
+  max-width: 400px;
 }
 
 .no-spinners::-webkit-inner-spin-button,
@@ -285,38 +191,27 @@ h1 {
   gap: 8px;
 }
 
-.summary .neumorphic-card {
-  text-align: center;
-  padding: 8px;
-}
-
-.summary h3 {
-  margin: 0 0 5px 0;
-  font-size: 0.9rem;
-}
-
-.summary p {
-  margin: 0;
-  font-size: 0.9rem;
-  font-weight: bold;
-}
-
 .widgets {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
 }
 
 .widget {
   position: relative;
   transition: var(--transition), box-shadow 0.3s ease;
   --widget-color: #3498db;
+  padding: 10px;
+  border-radius: 12px;
+  background: var(--bg);
+  box-shadow: 5px 5px 10px var(--shadow-dark), 
+              -5px -5px 10px var(--shadow-light);
 }
 
 .widget:hover {
   transform: translateY(-3px);
-  box-shadow: 10px 10px 20px color-mix(in srgb, var(--widget-color) 30%, var(--shadow-dark)), 
-              -10px -10px 20px var(--shadow-light);
+  box-shadow: 8px 8px 15px color-mix(in srgb, var(--widget-color) 30%, var(--shadow-dark)), 
+              -8px -8px 15px var(--shadow-light);
 }
 
 .widget::before {
@@ -326,7 +221,7 @@ h1 {
   left: 0;
   right: 0;
   bottom: 0;
-  border-radius: 15px;
+  border-radius: 12px;
   box-shadow: 0 0 10px 3px var(--widget-color);
   opacity: 0.3;
   z-index: -1;
@@ -361,70 +256,16 @@ h1 {
   transform: scale(1.1);
 }
 
-.month-summary {
-  display: none;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 20px);
-  max-width: 500px;
-  padding: 15px;
-  z-index: 10;
-  max-height: 60vh;
-  overflow-y: auto;
-  background: var(--bg);
-  border-radius: 15px;
-  box-shadow: 7px 7px 20px var(--shadow-dark), 
-              -7px -7px 20px var(--shadow-light);
-  margin-top: 10px;
-}
-
-.month-summary.visible {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  animation: fadeIn 0.3s ease-out;
-}
-
-.month-card {
-  padding: 10px;
-  text-align: center;
-  cursor: pointer;
-  transition: var(--transition);
-  background: var(--bg);
-  border-radius: 12px;
-  box-shadow: 3px 3px 6px var(--shadow-dark), 
-              -3px -3px 6px var(--shadow-light);
-}
-
-.month-card.active {
-  box-shadow: inset 2px 2px 4px var(--shadow-dark), 
-              inset -2px -2px 4px var(--shadow-light),
-              0 0 8px 2px var(--primary);
-}
-
-.month-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 5px 5px 10px var(--shadow-dark), 
-              -5px -5px 10px var(--shadow-light);
-}
-
 .theme-switch-container {
   display: flex;
   align-items: center;
-  gap: 8px;
-}
-
-.theme-switch-label {
-  font-size: 0.8rem;
-  font-weight: 600;
 }
 
 .theme-switch {
   position: relative;
   display: inline-block;
-  width: 50px;
-  height: 28px;
+  width: 40px;
+  height: 24px;
 }
 
 .theme-switch input {
@@ -442,16 +283,16 @@ h1 {
   bottom: 0;
   background-color: #ccc;
   transition: .4s;
-  border-radius: 28px;
+  border-radius: 24px;
 }
 
 .slider:before {
   position: absolute;
   content: "";
-  height: 20px;
-  width: 20px;
-  left: 4px;
-  bottom: 4px;
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
   background-color: white;
   transition: .4s;
   border-radius: 50%;
@@ -462,12 +303,17 @@ input:checked + .slider {
 }
 
 input:checked + .slider:before {
-  transform: translateX(22px);
+  transform: translateX(16px);
 }
 
 .category-selector {
   position: relative;
-  display: inline-block;
+}
+
+.category-menu {
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
 }
 
 .categories-list {
@@ -485,7 +331,10 @@ input:checked + .slider:before {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
+  background: var(--bg);
+  box-shadow: 3px 3px 6px var(--shadow-dark), 
+              -3px -3px 6px var(--shadow-light);
 }
 
 .category-item:hover {
@@ -506,7 +355,7 @@ input:checked + .slider:before {
 }
 
 .delete-category-btn:hover {
-  transform: scale(1.1);
+  transform: scale(1.2);
 }
 
 .chart-container {
@@ -519,7 +368,7 @@ input:checked + .slider:before {
 canvas {
   width: 100% !important;
   height: 100% !important;
-  border-radius: 15px;
+  border-radius: 12px;
 }
 
 .settings-menu {
@@ -529,13 +378,14 @@ canvas {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 15px;
+  padding: 12px;
   min-width: 180px;
 }
 
 .settings-menu .neumorphic-btn {
   width: 100%;
   text-align: center;
+  font-size: 0.9rem;
 }
 
 .currency-toggle {
@@ -544,7 +394,7 @@ canvas {
   justify-content: space-between;
   padding: 8px 0;
   border-top: 1px solid rgba(0,0,0,0.1);
-  font-size: 0.8rem;
+  font-size: 0.9rem;
 }
 
 body.dark .currency-toggle {
@@ -554,8 +404,8 @@ body.dark .currency-toggle {
 .switch {
   position: relative;
   display: inline-block;
-  width: 45px;
-  height: 22px;
+  width: 40px;
+  height: 20px;
   margin: 0 5px;
 }
 
@@ -566,7 +416,7 @@ body.dark .currency-toggle {
 }
 
 .slider.round {
-  border-radius: 28px;
+  border-radius: 20px;
 }
 
 .slider.round:before {
@@ -583,49 +433,27 @@ body.dark .currency-toggle {
 .widget-input {
   flex: 1;
   font-size: 0.8rem;
-}
-
-.analytics h2 {
-  margin-bottom: 15px;
-  text-align: center;
-  font-size: 1.2rem;
-}
-
-.analytics-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 15px;
-}
-
-.analytics-card {
+  padding: 6px 8px;
   background: var(--bg);
-  border-radius: 15px;
-  padding: 15px;
-  box-shadow: 7px 7px 15px var(--shadow-dark), 
-              -7px -7px 15px var(--shadow-light);
-}
-
-.analytics-card h3 {
-  margin-top: 0;
-  text-align: center;
-  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  box-shadow: inset 2px 2px 4px var(--shadow-dark), 
+              inset -2px -2px 4px var(--shadow-light);
 }
 
 .month-selector {
-  display: flex;
-  justify-content: center;
   margin-bottom: 15px;
   background: var(--bg);
   padding: 10px;
-  border-radius: 15px;
+  border-radius: 12px;
   box-shadow: 3px 3px 6px var(--shadow-dark), 
               -3px -3px 6px var(--shadow-light);
 }
 
 .month-tabs {
   display: flex;
-  flex-wrap: wrap;
   gap: 5px;
+  flex-wrap: wrap;
   justify-content: center;
 }
 
@@ -633,11 +461,11 @@ body.dark .currency-toggle {
   padding: 6px 8px;
   min-width: 40px;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   background: var(--bg);
   color: var(--text);
   cursor: pointer;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   font-weight: 600;
   box-shadow: 3px 3px 6px var(--shadow-dark), 
               -3px -3px 6px var(--shadow-light);
@@ -664,9 +492,15 @@ body.dark .currency-toggle {
               inset -2px -2px 4px rgba(255,255,255,0.1);
 }
 
-.year-summary-btn {
-  margin-left: auto;
-  white-space: nowrap;
+.year-summary {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 body.dark {
@@ -679,7 +513,7 @@ body.dark {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -697,84 +531,51 @@ body.dark {
   color: #e74c3c !important;
 }
 
-#close-month-details {
-  margin-top: 15px;
-  width: 100%;
-}
-
-/* Горизонтальная ориентация на мобильных устройствах */
-@media screen and (min-width: 768px) and (orientation: landscape) {
-  .app {
-    padding: 15px;
-  }
-  
-  .summary {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-  }
-  
-  .widgets {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 15px;
-  }
-  
-  .month-tabs {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-bottom: 5px;
-    justify-content: flex-start;
-  }
-  
-  .month-tab {
-    flex-shrink: 0;
-  }
-  
-  .chart-container {
-    height: 350px;
-  }
-  
-  .analytics-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  /* Для меню в горизонтальной ориентации */
-  #category-menu {
-    max-height: 80vh;
-  }
-}
-
-@media (min-width: 992px) {
+@media (min-width: 768px) {
   .app {
     padding: 20px;
   }
   
+  header h1 {
+    font-size: 2rem;
+  }
+  
   .summary {
+    grid-template-columns: repeat(4, 1fr);
     gap: 15px;
   }
   
   .widgets {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 15px;
   }
   
-  .analytics-grid {
-    grid-template-columns: repeat(3, 1fr);
+  .neumorphic-btn {
+    padding: 12px 20px;
+    font-size: 1rem;
+  }
+  
+  .neumorphic-card {
+    padding: 15px;
+    border-radius: 15px;
   }
   
   .month-tabs {
-    flex-wrap: wrap;
-    justify-content: center;
+    gap: 8px;
   }
   
   .month-tab {
-    flex-shrink: 1;
+    padding: 8px 12px;
+    font-size: 0.9rem;
   }
 }
 
-/* Вертикальная ориентация на планшетах */
-@media (min-width: 768px) and (orientation: portrait) {
-  .month-tabs {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
+@media (min-width: 992px) {
+  .widgets {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+  
+  .chart-container {
+    height: 400px;
   }
 }
