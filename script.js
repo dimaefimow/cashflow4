@@ -79,18 +79,12 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   // Fullscreen functionality
-  function enterFullscreen() {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(err => {
-        console.error(`Ошибка при переходе в полноэкранный режим: ${err.message}`);
-      });
-    }
-  }
+  elements.fullscreenBtn.addEventListener('click', toggleFullscreen);
 
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(err => {
-        console.error(`Ошибка при переходе в полноэкранный режим: ${err.message}`);
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
       });
       elements.fullscreenBtn.textContent = '⛶';
     } else {
@@ -101,8 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  elements.fullscreenBtn.addEventListener('click', toggleFullscreen);
-
+  // Update fullscreen button icon when exiting via ESC
   document.addEventListener('fullscreenchange', () => {
     if (!document.fullscreenElement) {
       elements.fullscreenBtn.textContent = '⛶';
@@ -712,11 +705,6 @@ document.addEventListener('DOMContentLoaded', function() {
   function initializeApp() {
     // Set current month tab as active
     elements.monthTabs[currentMonth].classList.add('active');
-    
-    // Try to enter fullscreen mode
-    setTimeout(() => {
-      enterFullscreen();
-    }, 500); // Небольшая задержка для корректной работы в некоторых браузерах
     
     fetchExchangeRate();
     updateUI();
