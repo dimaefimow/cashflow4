@@ -74,7 +74,8 @@ document.addEventListener('DOMContentLoaded', function() {
     settingsMenu: document.getElementById('settings-menu'),
     monthTabs: document.querySelectorAll('.month-tab'),
     yearSummary: document.getElementById('year-summary'),
-    closeYearSummary: document.getElementById('close-year-summary')
+    closeYearSummary: document.getElementById('close-year-summary'),
+    fullscreenBtn: document.getElementById('fullscreen-btn')
   };
 
   // Fullscreen functionality
@@ -424,7 +425,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Create gradient for each bar
     const backgroundColors = categoryNames.map((_, index) => {
       const color = categoryColors[index % categoryColors.length];
-      const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+      const gradient = ctx.createLinearGradient(0, 0, 0, 400);
       gradient.addColorStop(0, color);
       gradient.addColorStop(1, shadeColor(color, -40));
       return gradient;
@@ -440,7 +441,7 @@ document.addEventListener('DOMContentLoaded', function() {
           backgroundColor: backgroundColors,
           borderColor: document.body.classList.contains('dark') ? '#2e2e2e' : '#e0e5ec',
           borderWidth: 2,
-          borderRadius: 8,
+          borderRadius: 10,
           borderSkipped: false,
         }]
       },
@@ -482,7 +483,7 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         },
         animation: {
-          duration: 800,
+          duration: 1000,
           easing: 'easeOutQuart'
         }
       }
@@ -510,12 +511,12 @@ document.addEventListener('DOMContentLoaded', function() {
           data: [capitalValue],
           backgroundColor: '#3498db33',
           borderColor: '#3498db',
-          borderWidth: 2,
+          borderWidth: 3,
           tension: 0.3,
           fill: true,
           pointBackgroundColor: '#3498db',
-          pointRadius: 4,
-          pointHoverRadius: 6
+          pointRadius: 5,
+          pointHoverRadius: 7
         }]
       },
       options: {
@@ -554,7 +555,7 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         },
         animation: {
-          duration: 800,
+          duration: 1000,
           easing: 'easeOutQuart'
         }
       }
@@ -641,12 +642,12 @@ document.addEventListener('DOMContentLoaded', function() {
             data: capitalData,
             backgroundColor: 'rgba(52, 152, 219, 0.2)',
             borderColor: 'rgba(52, 152, 219, 1)',
-            borderWidth: 2,
+            borderWidth: 3,
             tension: 0.3,
             fill: true,
             pointBackgroundColor: 'rgba(52, 152, 219, 1)',
-            pointRadius: 4,
-            pointHoverRadius: 6
+            pointRadius: 5,
+            pointHoverRadius: 7
           }]
         },
         options: createYearChartOptions('Капитализация по месяцам')
@@ -663,7 +664,7 @@ document.addEventListener('DOMContentLoaded', function() {
           display: true,
           text: title,
           font: {
-            size: 14
+            size: 16
           },
           color: document.body.classList.contains('dark') ? '#eee' : '#333'
         },
@@ -701,7 +702,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       },
       animation: {
-        duration: 800,
+        duration: 1000,
         easing: 'easeOutQuart'
       }
     };
@@ -709,20 +710,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Initialize application
   function initializeApp() {
-  // Проверяем, было ли уже показано уведомление
-  if (!localStorage.getItem('fullscreenPromptShown')) {
-    if (confirm('Хотите открыть приложение в полноэкранном режиме для лучшего опыта?')) {
-      enterFullscreen();
-    }
-    localStorage.setItem('fullscreenPromptShown', 'true');
-  }
-  
-  elements.monthTabs[currentMonth].classList.add('active');
-  fetchExchangeRate();
-  updateUI();
-}
     // Set current month tab as active
     elements.monthTabs[currentMonth].classList.add('active');
+    
+    // Try to enter fullscreen mode
+    setTimeout(() => {
+      enterFullscreen();
+    }, 500); // Небольшая задержка для корректной работы в некоторых браузерах
     
     fetchExchangeRate();
     updateUI();
