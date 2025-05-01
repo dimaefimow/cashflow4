@@ -77,6 +77,37 @@ document.addEventListener('DOMContentLoaded', function() {
     closeYearSummary: document.getElementById('close-year-summary')
   };
 
+  // Fullscreen functionality
+  function enterFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.error(`Ошибка при переходе в полноэкранный режим: ${err.message}`);
+      });
+    }
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.error(`Ошибка при переходе в полноэкранный режим: ${err.message}`);
+      });
+      elements.fullscreenBtn.textContent = '⛶';
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+        elements.fullscreenBtn.textContent = '⛶';
+      }
+    }
+  }
+
+  elements.fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+  document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement) {
+      elements.fullscreenBtn.textContent = '⛶';
+    }
+  });
+
   // App data structure
   let financeData = JSON.parse(localStorage.getItem('financeData')) || {};
   
@@ -678,6 +709,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Initialize application
   function initializeApp() {
+  // Проверяем, было ли уже показано уведомление
+  if (!localStorage.getItem('fullscreenPromptShown')) {
+    if (confirm('Хотите открыть приложение в полноэкранном режиме для лучшего опыта?')) {
+      enterFullscreen();
+    }
+    localStorage.setItem('fullscreenPromptShown', 'true');
+  }
+  
+  elements.monthTabs[currentMonth].classList.add('active');
+  fetchExchangeRate();
+  updateUI();
+}
     // Set current month tab as active
     elements.monthTabs[currentMonth].classList.add('active');
     
