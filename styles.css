@@ -151,28 +151,51 @@ header h1 {
 
 .neumorphic-menu {
   display: none;
-  position: absolute;
+  position: fixed;
   background: var(--bg);
   border-radius: 15px;
   padding: 15px;
   box-shadow: 8px 8px 20px var(--shadow-dark), 
               -8px -8px 20px var(--shadow-light);
-  z-index: 10;
+  z-index: 1000;
   min-width: 200px;
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.category-menu, 
+.budget-settings-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  max-height: 60vh;
+  transform: none;
+}
+
+.financial-menu {
+  width: 90%;
+  max-width: 800px;
+  padding: 20px;
+}
+
+#capitalization-menu {
+  width: 90%;
+  max-width: 500px;
+}
+
+.year-summary {
+  width: 90%;
+  max-width: 800px;
 }
 
 .neumorphic-menu.show {
   display: block;
   animation: fadeIn 0.3s ease-out;
-}
-
-#capitalization-menu {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 400px;
 }
 
 .no-spinners::-webkit-inner-spin-button,
@@ -306,58 +329,6 @@ input:checked + .slider:before {
   transform: translateX(16px);
 }
 
-.category-selector {
-  position: relative;
-}
-
-.category-menu {
-  top: 100%;
-  left: 0;
-  margin-top: 8px;
-}
-
-.categories-list {
-  max-height: 150px;
-  overflow-y: auto;
-  margin-top: 10px;
-}
-
-.category-item {
-  padding: 8px;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: var(--transition);
-  margin: 3px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.9rem;
-  background: var(--bg);
-  box-shadow: 3px 3px 6px var(--shadow-dark), 
-              -3px -3px 6px var(--shadow-light);
-}
-
-.category-item:hover {
-  transform: translateX(3px);
-  background: rgba(0,0,0,0.05);
-  box-shadow: 2px 2px 4px var(--shadow-dark), 
-              -2px -2px 4px var(--shadow-light);
-}
-
-.delete-category-btn {
-  background: none;
-  border: none;
-  color: #e74c3c;
-  font-size: 1rem;
-  cursor: pointer;
-  padding: 0 3px;
-  transition: var(--transition);
-}
-
-.delete-category-btn:hover {
-  transform: scale(1.2);
-}
-
 .chart-container {
   position: relative;
   height: 300px;
@@ -369,76 +340,6 @@ canvas {
   width: 100% !important;
   height: 100% !important;
   border-radius: 12px;
-}
-
-.settings-menu {
-  right: 0;
-  top: 100%;
-  margin-top: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 12px;
-  min-width: 180px;
-}
-
-.settings-menu .neumorphic-btn {
-  width: 100%;
-  text-align: center;
-  font-size: 0.9rem;
-}
-
-.currency-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 0;
-  border-top: 1px solid rgba(0,0,0,0.1);
-  font-size: 0.9rem;
-}
-
-body.dark .currency-toggle {
-  border-top-color: rgba(255,255,255,0.1);
-}
-
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 40px;
-  height: 20px;
-  margin: 0 5px;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider.round {
-  border-radius: 20px;
-}
-
-.slider.round:before {
-  border-radius: 50%;
-}
-
-.widget-input-group {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-  align-items: center;
-}
-
-.widget-input {
-  flex: 1;
-  font-size: 0.8rem;
-  padding: 6px 8px;
-  background: var(--bg);
-  border: none;
-  border-radius: 8px;
-  box-shadow: inset 2px 2px 4px var(--shadow-dark), 
-              inset -2px -2px 4px var(--shadow-light);
 }
 
 .month-selector {
@@ -492,26 +393,217 @@ body.dark .currency-toggle {
               inset -2px -2px 4px rgba(255,255,255,0.1);
 }
 
-.year-summary {
+/* Финансовые карточки */
+.financial-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.financial-card {
+  background: var(--bg);
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 3px 3px 6px var(--shadow-dark), 
+              -3px -3px 6px var(--shadow-light);
+  text-align: center;
+  transition: var(--transition);
+}
+
+.financial-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 5px 5px 10px var(--shadow-dark), 
+              -5px -5px 10px var(--shadow-light);
+}
+
+.financial-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 1rem;
+  color: var(--text);
+  opacity: 0.8;
+}
+
+.financial-value {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--primary);
+  word-break: break-word;
+}
+
+/* Контейнеры для графиков */
+.financial-charts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.financial-chart-container {
+  background: var(--bg);
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 3px 3px 6px var(--shadow-dark), 
+              -3px -3px 6px var(--shadow-light);
+  width: 100%;
+}
+
+.financial-chart-container h4 {
+  margin: 0 0 10px 0;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.financial-chart-container canvas {
+  width: 100% !important;
+  height: 200px !important;
+}
+
+/* Отчет о категориях */
+.top-categories-report {
+  background: var(--bg);
+  border-radius: 15px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: 3px 3px 6px var(--shadow-dark), 
+              -3px -3px 6px var(--shadow-light);
+  width: 100%;
+}
+
+.top-categories-report h4 {
+  margin: 0 0 20px 0;
+  text-align: center;
+  font-size: 1.2rem;
+  color: var(--primary);
+}
+
+.categories-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.month-categories {
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 3px 3px 6px var(--shadow-dark), 
+              -3px -3px 6px var(--shadow-light);
+}
+
+.month-categories h5 {
+  margin: 0 0 12px 0;
+  font-size: 1rem;
+  color: var(--primary);
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.category-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.03);
+  transition: var(--transition);
+}
+
+.category-item.total {
+  background: rgba(52, 152, 219, 0.1);
+  font-weight: bold;
+}
+
+.category-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.categories-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.categories-list::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.05);
+  border-radius: 4px;
+}
+
+.categories-list::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+/* Виджет бюджета */
+.daily-budget-widget {
+  margin: 15px 0;
+  position: relative;
+}
+
+.daily-budget-widget .neumorphic-card {
+  padding: 15px;
+}
+
+.budget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.budget-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+#daily-budget-amount {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 5px 0;
+  color: var(--primary);
+}
+
+#budget-progress {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text);
+  opacity: 0.8;
+}
+
+#set-budget-modal {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 90%;
-  max-width: 400px;
-  max-height: 80vh;
-  overflow-y: auto;
+  max-width: 350px;
+  padding: 20px;
 }
 
-body.dark {
-  --bg: #2e2e2e;
-  --text: #eee;
-  --shadow-light: #3a3a3a;
-  --shadow-dark: #1a1a1a;
-  --primary: #2980b9;
-  --primary-hover: #3498db;
+#set-budget-modal h3 {
+  margin-top: 0;
+  text-align: center;
 }
 
+#set-budget-modal .neumorphic-input {
+  margin-bottom: 15px;
+}
+
+#set-budget-modal .button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+#set-budget-modal .button-group .neumorphic-btn {
+  flex: 1;
+}
+
+/* Анимации */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -531,6 +623,29 @@ body.dark {
   color: #e74c3c !important;
 }
 
+/* Темная тема */
+body.dark {
+  --bg: #2e2e2e;
+  --text: #eee;
+  --shadow-light: #3a3a3a;
+  --shadow-dark: #1a1a1a;
+  --primary: #2980b9;
+  --primary-hover: #3498db;
+}
+
+body.dark .category-item {
+  background: rgba(255,255,255,0.05);
+}
+
+body.dark .category-item.total {
+  background: rgba(52, 152, 219, 0.2);
+}
+
+body.dark .month-categories h5 {
+  border-bottom-color: rgba(255,255,255,0.1);
+}
+
+/* Адаптация для планшетов */
 @media (min-width: 768px) {
   .app {
     padding: 20px;
@@ -568,8 +683,37 @@ body.dark {
     padding: 8px 12px;
     font-size: 0.9rem;
   }
+  
+  .financial-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .financial-charts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .financial-card h3 {
+    font-size: 1.1rem;
+  }
+  
+  .financial-value {
+    font-size: 1.6rem;
+  }
+  
+  .financial-chart-container h4 {
+    font-size: 1rem;
+  }
+  
+  .top-categories-report h4 {
+    font-size: 1.3rem;
+  }
+  
+  .month-categories h5 {
+    font-size: 1.1rem;
+  }
 }
 
+/* Адаптация для десктопов */
 @media (min-width: 992px) {
   .widgets {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -577,5 +721,75 @@ body.dark {
   
   .chart-container {
     height: 400px;
+  }
+  
+  .settings-menu {
+    min-width: 250px;
+  }
+  
+  .financial-menu {
+    max-width: 800px;
+  }
+  
+  .financial-chart-container canvas {
+    height: 200px !important;
+  }
+  
+  .categories-list {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 767px) {
+  .neumorphic-menu {
+    width: 95vw;
+    padding: 10px;
+  }
+  
+  .financial-menu, 
+  #capitalization-menu,
+  .year-summary {
+    width: 95vw;
+    max-width: none;
+  }
+  
+  .category-menu, 
+  .budget-settings-menu {
+    width: 100vw;
+    left: -10px;
+    border-radius: 0 0 15px 15px;
+  }
+  
+  .financial-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .financial-charts {
+    grid-template-columns: 1fr;
+  }
+  
+  .financial-chart-container canvas {
+    height: 250px !important;
+  }
+  
+  .categories-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .top-categories-report {
+    padding: 15px;
+  }
+  
+  .month-categories {
+    padding: 12px;
+  }
+  
+  .financial-card {
+    padding: 12px;
+  }
+  
+  .financial-value {
+    font-size: 1.2rem;
   }
 }
