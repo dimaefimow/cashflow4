@@ -746,6 +746,13 @@ body.dark .month-categories h5 {
     width: 95vw;
     padding: 10px;
   }
+
+  @viewport {
+  width: device-width;
+  initial-scale: 1.0;
+  maximum-scale: 1.0;
+  user-scalable: no;
+}
   
   .financial-menu, 
   #capitalization-menu,
