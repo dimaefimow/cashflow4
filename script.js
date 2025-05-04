@@ -54,7 +54,6 @@ document.addEventListener('DOMContentLoaded', function() {
     monthTabs: document.querySelectorAll('.month-tab'),
     yearSummary: document.getElementById('year-summary'),
     closeYearSummary: document.getElementById('close-year-summary'),
-    fullscreenBtn: document.getElementById('fullscreen-btn'),
     dailyBudgetAmount: document.getElementById('daily-budget-amount'),
     budgetProgress: document.getElementById('budget-progress'),
     budgetSettingsBtn: document.getElementById('budget-settings-btn'),
@@ -660,22 +659,11 @@ document.addEventListener('DOMContentLoaded', function() {
     G = (G<255)?G:255;  
     B = (B<255)?B:255;  
 
-    return `rgb(${R},${G},${B})`;
-  }
+    const RR = ((R.toString(16).length==1)?"0"+R.toString(16):R.toString(16));
+    const GG = ((G.toString(16).length==1)?"0"+G.toString(16):G.toString(16));
+    const BB = ((B.toString(16).length==1)?"0"+B.toString(16):B.toString(16));
 
-  // Полноэкранный режим
-  function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(err => {
-        console.error(`Error attempting to enable fullscreen: ${err.message}`);
-      });
-      elements.fullscreenBtn.textContent = '⛶';
-    } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-        elements.fullscreenBtn.textContent = '⛶';
-      }
-    }
+    return "#"+RR+GG+BB;
   }
 
   // Инициализация приложения
@@ -696,17 +684,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Настройка темы
+    if (localStorage.getItem('darkTheme') === 'true') {
+      document.body.classList.add('dark');
+      elements.themeToggle.checked = true;
+    }
+    
     elements.themeToggle.addEventListener('change', () => {
       document.body.classList.toggle('dark');
+      localStorage.setItem('darkTheme', elements.themeToggle.checked);
       renderAllCharts();
-    });
-    
-    // Настройка полноэкранного режима
-    elements.fullscreenBtn.addEventListener('click', toggleFullscreen);
-    document.addEventListener('fullscreenchange', () => {
-      if (!document.fullscreenElement) {
-        elements.fullscreenBtn.textContent = '⛶';
-      }
     });
     
     // Обработчики событий
