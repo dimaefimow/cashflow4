@@ -3,31 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>   </title>
+  <title>Финансовая аналитика</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="app">
     <header>
-  <div class="header-left">
-    <button id="capitalization-btn" class="neumorphic-btn">Капитализация</button>
-    <button id="category-btn" class="neumorphic-btn">Категории ▼</button>
-  </div>
-  
-  <div class="header-right">
-    <div class="theme-switch-container">
-      <span class="theme-label">Тёмная тема</span>
-      <label class="theme-switch">
-        <input type="checkbox" id="theme-toggle">
-        <span class="slider round"></span>
-      </label>
-    </div>
-    <button id="fullscreen-btn" class="neumorphic-btn" title="Полноэкранный режим">⛶</button>
-    <button id="settings-btn" class="neumorphic-btn">Отчёты</button>
-  </div>
-  
-
-      <!-- Обновленное меню финансовых показателей -->
+      <div class="header-container">
+        <h1>          </h1>
+        <div class="header-buttons">
+          <button id="capitalization-btn" class="neumorphic-btn">Капитализация</button>
+          <button id="category-btn" class="neumorphic-btn">Категории ▼</button>
+          <button id="settings-btn" class="neumorphic-btn">Отчёты</button>
+          <div class="theme-switch-container">
+            <span class="theme-label">Тёмная</span>
+            <label class="theme-switch">
+              <input type="checkbox" id="theme-toggle">
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      
       <div id="settings-menu" class="neumorphic-menu financial-menu">
         <div class="financial-grid">
           <div class="financial-card">
@@ -59,13 +56,12 @@
           </div>
         </div>
         
-        <!-- Отчет о самых затратных категориях -->
         <div class="top-categories-report">
           <h4>Самые затратные категории</h4>
           <div id="top-categories-list" class="categories-list"></div>
         </div>
         
-        <button id="year-summary-btn" class="neumorphic-btn primary">Выход</button>
+        <button id="year-summary-btn" class="neumorphic-btn primary">Годовой отчёт</button>
       </div>
     </header>
 
@@ -89,7 +85,7 @@
 
     <section class="month-selector">
       <div class="month-tabs">
-        <button class="month-tab neumorphic-btn active" data-month="0">Янв</button>
+        <button class="month-tab neumorphic-btn" data-month="0">Янв</button>
         <button class="month-tab neumorphic-btn" data-month="1">Фев</button>
         <button class="month-tab neumorphic-btn" data-month="2">Мар</button>
         <button class="month-tab neumorphic-btn" data-month="3">Апр</button>
@@ -106,12 +102,11 @@
 
     <section class="inputs">
       <div class="input-group">
-        <input type="number" id="income-input" placeholder="Доход ₽" class="no-spinners neumorphic-input" />
+        <input type="number" id="income-input" placeholder="Доход ₽" class="neumorphic-input" />
         <button id="add-income-btn" class="neumorphic-btn">+</button>
       </div>
     </section>
 
-    <!-- Daily Budget Widget -->
     <section class="daily-budget-widget">
       <div class="neumorphic-card">
         <div class="budget-header">
@@ -122,7 +117,6 @@
         <p id="budget-progress">Не задано</p>
       </div>
       
-      <!-- Упрощенное меню бюджета -->
       <div id="budget-settings-menu" class="neumorphic-menu">
         <button id="set-budget-btn" class="neumorphic-btn">Установить бюджет</button>
       </div>
@@ -170,46 +164,5 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="script.js"></script>
-  <script>
-    // Регистрация Service Worker
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(registration => {
-            console.log('ServiceWorker registration successful');
-          })
-          .catch(err => {
-            console.log('ServiceWorker registration failed: ', err);
-          });
-      });
-    }
-    
-    // Обработчик для кнопки установки PWA
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      
-      // Можно показать кнопку установки приложения
-      const installBtn = document.createElement('button');
-      installBtn.textContent = 'Установить приложение';
-      installBtn.className = 'neumorphic-btn primary';
-      installBtn.style.margin = '10px auto';
-      installBtn.style.display = 'block';
-      installBtn.onclick = () => {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted the install prompt');
-          } else {
-            console.log('User dismissed the install prompt');
-          }
-          deferredPrompt = null;
-        });
-      };
-      
-      document.querySelector('header').appendChild(installBtn);
-    });
-  </script>
 </body>
 </html>
