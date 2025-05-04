@@ -32,12 +32,15 @@ header {
   flex-wrap: wrap;
   gap: 10px;
   position: relative;
+  padding-top: 50px;
 }
 
 .header-left {
   display: flex;
   gap: 8px;
   order: 1;
+  flex: 1;
+  justify-content: flex-start;
 }
 
 .header-right {
@@ -45,14 +48,16 @@ header {
   align-items: center;
   gap: 8px;
   order: 3;
+  flex: 1;
+  justify-content: flex-end;
 }
 
 header h1 {
   margin: 0;
   font-size: 1.5rem;
   order: 2;
-  flex: 1;
-  text-align: center;
+  flex: 0 0 auto;
+  margin: 0 15px;
 }
 
 #fullscreen-btn {
@@ -742,17 +747,34 @@ body.dark .month-categories h5 {
 
 /* Адаптация для мобильных */
 @media (max-width: 767px) {
+  header {
+    flex-direction: column;
+    gap: 15px;
+    padding-top: 20px;
+  }
+  
+  .header-left, .header-right {
+    justify-content: center;
+    width: 100%;
+  }
+  
+  header h1 {
+    order: 1;
+    margin: 0;
+  }
+  
+  .header-left {
+    order: 2;
+  }
+  
+  .header-right {
+    order: 3;
+  }
+  
   .neumorphic-menu {
     width: 95vw;
     padding: 10px;
   }
-
-@viewport {
-  width: device-width;
-  initial-scale: 1.0;
-  maximum-scale: 1.0;
-  user-scalable: no;
- }
   
   .financial-menu, 
   #capitalization-menu,
