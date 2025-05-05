@@ -152,7 +152,6 @@ input:checked + .slider:before {
   white-space: nowrap;
   user-select: none;
   touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
 }
 
 .neumorphic-btn:hover {
@@ -686,36 +685,12 @@ canvas {
   100% { transform: scale(1); }
 }
 
-@keyframes vibrate {
-  0% { transform: translate(0); }
-  20% { transform: translate(-1px, 1px); }
-  40% { transform: translate(-1px, -1px); }
-  60% { transform: translate(1px, 1px); }
-  80% { transform: translate(1px, -1px); }
-  100% { transform: translate(0); }
-}
-
 .pulse {
   animation: pulse 0.5s ease;
 }
 
 .negative {
   color: #e74c3c !important;
-}
-
-/* Виброотклик для кнопок */
-@supports (-webkit-touch-callout: none) {
-  .neumorphic-btn:active {
-    animation: vibrate 0.3s linear;
-  }
-}
-
-/* Для iOS 13+ */
-@media (hover: none) and (pointer: coarse) {
-  .neumorphic-btn:active {
-    transform: scale(0.97);
-    transition: transform 0.1s ease;
-  }
 }
 
 /* Dark theme */
