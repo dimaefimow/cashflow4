@@ -100,11 +100,6 @@ document.addEventListener('DOMContentLoaded', function() {
     return amount.toLocaleString('ru-RU') + ' ₽';
   }
 
-  // Форматирование валюты для бюджета
-  function formatBudgetCurrency(amount) {
-    return amount.toLocaleString('ru-RU') + ' ₽';
-  }
-
   // Обновление списка категорий
   function updateCategoriesList() {
     elements.categoriesList.innerHTML = '';
@@ -380,7 +375,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Обновление виджета бюджета
   function updateBudgetWidget() {
     if (!budgetData.startDate) {
-      elements.dailyBudgetAmount.textContent = formatBudgetCurrency(0);
+      elements.dailyBudgetAmount.textContent = formatCurrency(0);
       elements.budgetProgress.textContent = 'Не задано';
       return;
     }
@@ -391,7 +386,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const remainingDays = Math.max(0, budgetData.days - elapsedDays);
     
     if (remainingDays <= 0) {
-      elements.dailyBudgetAmount.textContent = formatBudgetCurrency(0);
+      elements.dailyBudgetAmount.textContent = formatCurrency(0);
       elements.budgetProgress.textContent = 'Срок истек';
       return;
     }
@@ -399,7 +394,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const remainingAmount = budgetData.totalAmount - budgetData.spent;
     const dailyBudget = remainingAmount / remainingDays;
     
-    elements.dailyBudgetAmount.textContent = formatBudgetCurrency(dailyBudget);
+    elements.dailyBudgetAmount.textContent = formatCurrency(dailyBudget);
     elements.budgetProgress.textContent = `${remainingDays} дн. осталось (${elapsedDays}/${budgetData.days})`;
     
     const todayStr = today.toISOString().split('T')[0];
