@@ -89,6 +89,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
+  // Функция вибрации
+  function vibrate() {
+    // Проверяем поддержку вибрации
+    if ('vibrate' in navigator) {
+      // Вибрация для устройств с поддержкой API
+      navigator.vibrate(10);
+    }
+  }
+
   // Функция сохранения данных
   function saveData() {
     localStorage.setItem('financeData', JSON.stringify(financeData));
@@ -111,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
       categoryItem.innerHTML = `
         <span style="color: ${categoryColors[index % categoryColors.length]}">■</span> ${category}
         <span>${formatCurrency(categories[category])}</span>
-        <button class="delete-category-btn" onclick="deleteCategory('${category}')">×</button>
+        <button class="delete-category-btn neumorphic-btn small" onclick="deleteCategory('${category}')">×</button>
       `;
       elements.categoriesList.appendChild(categoryItem);
     });
@@ -119,6 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Удаление категории (глобальная функция)
   window.deleteCategory = function(category) {
+    vibrate();
     if (confirm(`Удалить категорию "${category}"? Все связанные расходы будут потеряны.`)) {
       const monthData = financeData[currentMonth] || { income: 0, expense: 0, categories: {} };
       const categoryExpense = monthData.categories[category] || 0;
@@ -446,6 +456,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Глобальные функции для работы с виджетами
   window.deleteWidget = function(category) {
+    vibrate();
     if (confirm(`Удалить категорию "${category}" и все связанные расходы?`)) {
       const monthData = financeData[currentMonth] || { income: 0, expense: 0, categories: {} };
       const categoryExpense = monthData.categories[category] || 0;
@@ -460,6 +471,7 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   window.addExpenseToCategory = function(category) {
+    vibrate();
     const input = document.getElementById(`expense-${category}`);
     const expenseVal = parseFloat(input.value.replace(/\s+/g, '').replace(',', '.'));
     const monthData = financeData[currentMonth] || { income: 0, expense: 0, categories: {} };
@@ -699,8 +711,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Настройка обработчиков событий
   function setupEventHandlers() {
+    // Добавляем обработчики вибрации для всех кнопок
+    document.querySelectorAll('.neumorphic-btn').forEach(btn => {
+      btn.addEventListener('touchstart', vibrate);
+      btn.addEventListener('mousedown', vibrate);
+    });
+
     // Добавление дохода
     elements.addIncomeBtn.addEventListener('click', () => {
+      vibrate();
       const incomeVal = parseFloat(elements.incomeInput.value.replace(/\s+/g, '').replace(',', '.'));
       const monthData = financeData[currentMonth] || { income: 0, expense: 0, categories: {} };
 
@@ -718,6 +737,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Добавление категории
     elements.addCategoryBtn.addEventListener('click', () => {
+      vibrate();
       const categoryName = elements.newCategoryInput.value.trim();
       const monthData = financeData[currentMonth] || { income: 0, expense: 0, categories: {} };
       if (categoryName && !monthData.categories[categoryName]) {
@@ -731,12 +751,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Меню категорий
     elements.categoryBtn.addEventListener('click', (e) => {
+      vibrate();
       e.stopPropagation();
       elements.categoryMenu.classList.toggle('show');
     });
 
     // Капитализация
     elements.capitalizationBtn.addEventListener('click', (e) => {
+      vibrate();
       e.stopPropagation();
       elements.categoryMenu.classList.remove('show');
       elements.settingsMenu.classList.remove('show');
@@ -752,6 +774,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     elements.saveCapitalBtn.addEventListener('click', () => {
+      vibrate();
       const capitalVal = parseFloat(elements.capitalInput.value.replace(/\s+/g, '').replace(',', '.'));
       if (!isNaN(capitalVal)) {
         financeData[currentMonth].capital = capitalVal;
@@ -762,11 +785,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     elements.cancelCapitalBtn.addEventListener('click', () => {
+      vibrate();
       elements.capitalizationMenu.classList.remove('show');
     });
 
     // Настройки/отчеты
     elements.settingsBtn.addEventListener('click', (e) => {
+      vibrate();
       e.stopPropagation();
       elements.settingsMenu.classList.toggle('show');
       elements.budgetSettingsMenu.classList.remove('show');
@@ -774,6 +799,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     elements.settingsMenu.addEventListener('click', (e) => {
       if (e.target.id === 'year-summary-btn') {
+        vibrate();
         elements.yearSummary.classList.add('show');
         renderYearCharts();
         elements.settingsMenu.classList.remove('show');
@@ -781,16 +807,19 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     elements.closeYearSummary.addEventListener('click', () => {
+      vibrate();
       elements.yearSummary.classList.remove('show');
     });
 
     // Бюджет
     elements.budgetSettingsBtn.addEventListener('click', (e) => {
+      vibrate();
       e.stopPropagation();
       elements.budgetSettingsMenu.classList.toggle('show');
     });
 
     elements.setBudgetBtn.addEventListener('click', () => {
+      vibrate();
       elements.budgetSettingsMenu.classList.remove('show');
       elements.setBudgetModal.classList.add('show');
       elements.budgetAmount.value = '';
@@ -798,6 +827,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     elements.saveBudgetBtn.addEventListener('click', () => {
+      vibrate();
       const amount = parseFloat(elements.budgetAmount.value.replace(/\s+/g, '').replace(',', '.'));
       const days = parseInt(elements.budgetDays.value);
       
@@ -826,12 +856,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     elements.cancelBudgetBtn.addEventListener('click', () => {
+      vibrate();
       elements.setBudgetModal.classList.remove('show');
     });
 
     // Переключение месяцев
     elements.monthTabs.forEach(tab => {
       tab.addEventListener('click', () => {
+        vibrate();
         elements.monthTabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         currentMonth = parseInt(tab.dataset.month);
