@@ -6,22 +6,27 @@
   --primary: #3498db;
   --primary-hover: #2980b9;
   --widget-color: #3498db;
-  --transition: all 0.3s ease;
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --border-radius: 12px;
 }
 
 body {
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   background: var(--bg);
   color: var(--text);
   margin: 0;
   padding: 0;
   transition: var(--transition);
+  min-height: 100vh;
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .app {
   max-width: 1200px;
-  margin: auto;
+  margin: 0 auto;
   padding: 10px;
+  position: relative;
 }
 
 /* Header styles */
@@ -57,6 +62,7 @@ header h1 {
   font-size: 1.5rem;
   text-align: center;
   white-space: nowrap;
+  font-weight: 700;
 }
 
 .theme-switch-container {
@@ -77,6 +83,7 @@ header h1 {
   display: inline-block;
   width: 40px;
   height: 20px;
+  flex-shrink: 0;
 }
 
 .theme-switch input {
@@ -110,7 +117,7 @@ header h1 {
 }
 
 input:checked + .slider {
-  background-color: #2196F3;
+  background-color: var(--primary);
 }
 
 input:checked + .slider:before {
@@ -131,7 +138,7 @@ input:checked + .slider:before {
 .neumorphic-btn {
   padding: 10px 15px;
   border: none;
-  border-radius: 12px;
+  border-radius: var(--border-radius);
   background: var(--bg);
   color: var(--text);
   cursor: pointer;
@@ -143,6 +150,8 @@ input:checked + .slider:before {
   position: relative;
   overflow: hidden;
   white-space: nowrap;
+  user-select: none;
+  touch-action: manipulation;
 }
 
 .neumorphic-btn:hover {
@@ -174,7 +183,7 @@ input:checked + .slider:before {
 .neumorphic-input {
   padding: 10px 12px;
   border: none;
-  border-radius: 12px;
+  border-radius: var(--border-radius);
   background: var(--bg);
   box-shadow: inset 3px 3px 6px var(--shadow-dark), 
               inset -3px -3px 6px var(--shadow-light);
@@ -182,6 +191,7 @@ input:checked + .slider:before {
   font-size: 0.9rem;
   width: 100%;
   box-sizing: border-box;
+  appearance: none;
 }
 
 .neumorphic-input:focus {
@@ -190,25 +200,16 @@ input:checked + .slider:before {
               inset -5px -5px 10px var(--shadow-light);
 }
 
-.no-spinners::-webkit-inner-spin-button,
-.no-spinners::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-.no-spinners {
-  -moz-appearance: textfield;
-}
-
 /* Cards */
 .neumorphic-card {
   background: var(--bg);
-  border-radius: 15px;
+  border-radius: var(--border-radius);
   padding: 12px;
   margin: 5px;
   box-shadow: 5px 5px 10px var(--shadow-dark), 
               -5px -5px 10px var(--shadow-light);
   transition: var(--transition);
+  position: relative;
 }
 
 .neumorphic-card:hover {
@@ -222,7 +223,7 @@ input:checked + .slider:before {
   display: none;
   position: fixed;
   background: var(--bg);
-  border-radius: 15px;
+  border-radius: var(--border-radius);
   padding: 15px;
   box-shadow: 8px 8px 20px var(--shadow-dark), 
               -8px -8px 20px var(--shadow-light);
@@ -234,6 +235,8 @@ input:checked + .slider:before {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .category-menu, 
@@ -264,7 +267,9 @@ input:checked + .slider:before {
 
 .neumorphic-menu.show {
   display: block;
-  animation: fadeIn 0.3s ease-out;
+  opacity: 1;
+  transform: translate(-50%, -50%);
+  animation: none;
 }
 
 /* Summary section */
@@ -272,6 +277,23 @@ input:checked + .slider:before {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 8px;
+}
+
+.summary .neumorphic-card {
+  text-align: center;
+  padding: 15px 10px;
+}
+
+.summary h2 {
+  margin: 0 0 5px 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.summary p {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
 }
 
 /* Widgets */
@@ -286,16 +308,10 @@ input:checked + .slider:before {
   transition: var(--transition), box-shadow 0.3s ease;
   --widget-color: #3498db;
   padding: 10px;
-  border-radius: 12px;
+  border-radius: var(--border-radius);
   background: var(--bg);
   box-shadow: 5px 5px 10px var(--shadow-dark), 
               -5px -5px 10px var(--shadow-light);
-}
-
-.widget:hover {
-  transform: translateY(-3px);
-  box-shadow: 8px 8px 15px color-mix(in srgb, var(--widget-color) 30%, var(--shadow-dark)), 
-              -8px -8px 15px var(--shadow-light);
 }
 
 .widget::before {
@@ -305,15 +321,24 @@ input:checked + .slider:before {
   left: 0;
   right: 0;
   bottom: 0;
-  border-radius: 12px;
+  border-radius: var(--border-radius);
   box-shadow: 0 0 10px 3px var(--widget-color);
   opacity: 0.3;
   z-index: -1;
-  transition: opacity 0.3s ease;
 }
 
-.widget:hover::before {
-  opacity: 0.7;
+.widget h3 {
+  margin: 0 0 5px 0;
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.widget p {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
 }
 
 .delete-widget-btn {
@@ -333,6 +358,7 @@ input:checked + .slider:before {
   justify-content: center;
   transition: var(--transition);
   font-size: 0.8rem;
+  line-height: 1;
 }
 
 .delete-widget-btn:hover {
@@ -346,14 +372,23 @@ input:checked + .slider:before {
   margin-top: 10px;
 }
 
+.widget-input {
+  flex: 1;
+  padding: 8px;
+  font-size: 0.8rem;
+}
+
 /* Month selector */
 .month-selector {
   margin-bottom: 15px;
   background: var(--bg);
   padding: 10px;
-  border-radius: 12px;
+  border-radius: var(--border-radius);
   box-shadow: 3px 3px 6px var(--shadow-dark), 
               -3px -3px 6px var(--shadow-light);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .month-tabs {
@@ -404,12 +439,17 @@ input:checked + .slider:before {
   height: 300px;
   width: 100%;
   margin-top: 15px;
+  background: var(--bg);
+  border-radius: var(--border-radius);
+  box-shadow: 3px 3px 6px var(--shadow-dark), 
+              -3px -3px 6px var(--shadow-light);
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 canvas {
   width: 100% !important;
   height: 100% !important;
-  border-radius: 12px;
 }
 
 /* Financial cards */
@@ -422,7 +462,7 @@ canvas {
 
 .financial-card {
   background: var(--bg);
-  border-radius: 15px;
+  border-radius: var(--border-radius);
   padding: 15px;
   box-shadow: 3px 3px 6px var(--shadow-dark), 
               -3px -3px 6px var(--shadow-light);
@@ -461,7 +501,7 @@ canvas {
 
 .financial-chart-container {
   background: var(--bg);
-  border-radius: 15px;
+  border-radius: var(--border-radius);
   padding: 15px;
   box-shadow: 3px 3px 6px var(--shadow-dark), 
               -3px -3px 6px var(--shadow-light);
@@ -482,7 +522,7 @@ canvas {
 /* Categories report */
 .top-categories-report {
   background: var(--bg);
-  border-radius: 15px;
+  border-radius: var(--border-radius);
   padding: 20px;
   margin: 20px 0;
   box-shadow: 3px 3px 6px var(--shadow-dark), 
@@ -508,7 +548,7 @@ canvas {
 
 .month-categories {
   background: var(--bg);
-  border-radius: 12px;
+  border-radius: var(--border-radius);
   padding: 15px;
   box-shadow: 3px 3px 6px var(--shadow-dark), 
               -3px -3px 6px var(--shadow-light);
@@ -541,6 +581,17 @@ canvas {
 .category-item:hover {
   transform: translateY(-2px);
   box-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.delete-category-btn {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 5px;
+  font-size: 1.1rem;
+  line-height: 1;
 }
 
 .categories-list::-webkit-scrollbar {
@@ -710,7 +761,6 @@ body.dark .month-categories h5 {
   
   .neumorphic-card {
     padding: 15px;
-    border-radius: 15px;
   }
   
   .month-tabs {
@@ -759,10 +809,6 @@ body.dark .month-categories h5 {
   
   .chart-container {
     height: 400px;
-  }
-  
-  .settings-menu {
-    min-width: 250px;
   }
   
   .financial-menu {
@@ -845,5 +891,30 @@ body.dark .month-categories h5 {
   
   .financial-value {
     font-size: 1.2rem;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 400px) {
+  .widgets {
+    grid-template-columns: 1fr;
+  }
+  
+  .summary {
+    grid-template-columns: 1fr;
+  }
+  
+  .header-buttons {
+    flex-wrap: wrap;
+  }
+  
+  .month-tabs {
+    gap: 3px;
+  }
+  
+  .month-tab {
+    min-width: 30px;
+    padding: 4px 6px;
+    font-size: 0.7rem;
   }
 }
