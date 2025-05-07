@@ -20,6 +20,7 @@ body {
   min-height: 100vh;
   overscroll-behavior: none;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .app {
@@ -42,6 +43,10 @@ header {
   gap: 15px;
 }
 
+.header-title {
+  height: 30px; /* Заменяем тире на пустой div с фиксированной высотой */
+}
+
 .header-buttons {
   display: flex;
   gap: 8px;
@@ -55,73 +60,6 @@ header {
 
 .header-buttons::-webkit-scrollbar {
   display: none;
-}
-
-header h1 {
-  margin: 0;
-  font-size: 1.5rem;
-  text-align: center;
-  white-space: nowrap;
-  font-weight: 700;
-}
-
-.theme-switch-container {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-left: 5px;
-  flex-shrink: 0;
-}
-
-.theme-label {
-  font-size: 0.8rem;
-  white-space: nowrap;
-}
-
-.theme-switch {
-  position: relative;
-  display: inline-block;
-  width: 40px;
-  height: 20px;
-  flex-shrink: 0;
-}
-
-.theme-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  transition: .4s;
-  border-radius: 20px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 16px;
-  width: 16px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
-  transition: .4s;
-  border-radius: 50%;
-}
-
-input:checked + .slider {
-  background-color: var(--primary);
-}
-
-input:checked + .slider:before {
-  transform: translateX(20px);
 }
 
 /* Inputs and buttons */
@@ -154,6 +92,12 @@ input:checked + .slider:before {
   touch-action: manipulation;
 }
 
+.neumorphic-btn.small {
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  min-width: 80px;
+}
+
 .neumorphic-btn:hover {
   transform: translateY(-2px);
   box-shadow: 8px 8px 15px var(--shadow-dark), 
@@ -173,11 +117,6 @@ input:checked + .slider:before {
 
 .neumorphic-btn.primary:hover {
   background: var(--primary-hover);
-}
-
-.neumorphic-btn.small {
-  padding: 8px 12px;
-  font-size: 0.8rem;
 }
 
 .neumorphic-input {
@@ -237,6 +176,27 @@ input:checked + .slider:before {
   transform: translate(-50%, -50%);
   opacity: 0;
   transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+#more-menu {
+  width: 250px;
+  padding: 15px;
+  right: 10px;
+  left: auto;
+  transform: none;
+  top: 60px;
+}
+
+#more-menu.show {
+  transform: none;
+  opacity: 1;
+}
+
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
 }
 
 .category-menu, 
@@ -376,6 +336,22 @@ input:checked + .slider:before {
   flex: 1;
   padding: 8px;
   font-size: 0.8rem;
+}
+
+/* Savings widget */
+.savings-progress-container {
+  height: 10px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 5px;
+  margin: 10px 0;
+  overflow: hidden;
+}
+
+.savings-progress-bar {
+  height: 100%;
+  background: #2ecc71;
+  border-radius: 5px;
+  transition: width 0.5s ease;
 }
 
 /* Month selector */
@@ -673,6 +649,26 @@ canvas {
   flex: 1;
 }
 
+/* Savings modal */
+#savings-modal {
+  width: 90%;
+  max-width: 350px;
+}
+
+#savings-modal .neumorphic-input {
+  margin-bottom: 15px;
+}
+
+#savings-modal .button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+#savings-modal .button-group .neumorphic-btn {
+  flex: 1;
+}
+
 /* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
@@ -733,15 +729,10 @@ body.dark .month-categories h5 {
     flex: 1;
   }
   
-  header h1 {
-    text-align: left;
+  .header-title {
+    height: auto;
     flex: 0 0 auto;
     margin-right: 20px;
-    font-size: 1.8rem;
-  }
-  
-  .theme-label {
-    font-size: 0.9rem;
   }
   
   .summary {
@@ -757,6 +748,10 @@ body.dark .month-categories h5 {
   .neumorphic-btn {
     padding: 12px 20px;
     font-size: 1rem;
+  }
+  
+  .neumorphic-btn.small {
+    min-width: 100px;
   }
   
   .neumorphic-card {
@@ -837,11 +832,6 @@ body.dark .month-categories h5 {
     justify-content: space-between;
   }
   
-  header h1 {
-    order: -1;
-    margin: 0;
-  }
-  
   .neumorphic-menu {
     width: 95vw;
     padding: 10px;
@@ -915,6 +905,12 @@ body.dark .month-categories h5 {
   .month-tab {
     min-width: 30px;
     padding: 4px 6px;
+    font-size: 0.7rem;
+  }
+  
+  .neumorphic-btn.small {
+    min-width: 70px;
+    padding: 6px 8px;
     font-size: 0.7rem;
   }
 }
