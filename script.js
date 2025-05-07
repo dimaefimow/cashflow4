@@ -18,6 +18,14 @@ document.addEventListener('DOMContentLoaded', function() {
     dailyHistory: {}
   };
 
+  // Данные накоплений
+  let savingsData = JSON.parse(localStorage.getItem('savingsData')) || {
+    enabled: false,
+    name: '',
+    goal: 0,
+    current: 0
+  };
+
   // Переменные для графиков
   let chart, capitalChart, yearIncomeChart, yearExpenseChart, yearCapitalChart;
   let miniCapitalChart, miniExpenseChart;
@@ -71,7 +79,16 @@ document.addEventListener('DOMContentLoaded', function() {
     avgExpense: document.getElementById('avg-expense'),
     bestMonth: document.getElementById('best-month'),
     topCategoriesList: document.getElementById('top-categories-list'),
-    themeToggle: document.getElementById('theme-toggle')
+    themeToggle: document.getElementById('theme-toggle'),
+    moreBtn: document.getElementById('more-btn'),
+    moreMenu: document.getElementById('more-menu'),
+    enableSavingsBtn: document.getElementById('enable-savings-btn'),
+    savingsModal: document.getElementById('savings-modal'),
+    savingsName: document.getElementById('savings-name'),
+    savingsGoal: document.getElementById('savings-goal'),
+    saveSavingsBtn: document.getElementById('save-savings-btn'),
+    cancelSavingsBtn: document.getElementById('cancel-savings-btn'),
+    closeReportsBtn: document.getElementById('close-reports-btn')
   };
 
   // Данные приложения
@@ -370,6 +387,7 @@ document.addEventListener('DOMContentLoaded', function() {
     renderWidgets();
     renderAllCharts();
     updateBudgetWidget();
+    renderSavingsWidget();
   }
 
   // Обновление виджета бюджета
@@ -444,6 +462,32 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
+  // Отрисовка виджета накоплений
+  function renderSavingsWidget() {
+    if (!savingsData.enabled) return;
+    
+    const widget = document.createElement('div');
+    widget.className = 'neumorphic-card widget savings-widget';
+    widget.style.setProperty('--widget-color', '#2ecc71');
+    
+    const progress = savingsData.goal > 0 ? Math.min(100, Math.round((savingsData.current / savingsData.goal) * 100)) : 0;
+    
+    widget.innerHTML = `
+      <button class="delete-widget-btn" onclick="disableSavings()">×</button>
+      <h3 style="color: #2ecc71">${savingsData.name || 'Накопления'}</h3>
+      <div class="savings-progress-container">
+        <div class="savings-progress-bar" style="width: ${progress}%"></div>
+      </div>
+      <p>${formatCurrency(savingsData.current)} / ${formatCurrency(savingsData.goal)} (${progress}%)</p>
+      <div class="widget-input-group">
+        <input type="number" class="neumorphic-input widget-input" placeholder="Сумма" id="savings-amount">
+        <button class="neumorphic-btn small" onclick="addToSavings()">+</button>
+      </div>
+    `;
+    
+    elements.widgetsContainer.prepend(widget);
+  }
+
   // Глобальные функции для работы с виджетами
   window.deleteWidget = function(category) {
     if (confirm(`Удалить категорию "${category}" и все связанные расходы?`)) {
@@ -471,6 +515,31 @@ document.addEventListener('DOMContentLoaded', function() {
       
       financeData[currentMonth] = monthData;
       saveData();
+      updateUI();
+      
+      const btn = input.nextElementSibling;
+      btn.classList.add('pulse');
+      setTimeout(() => btn.classList.remove('pulse'), 500);
+    }
+  };
+
+  // Функции для работы с накоплениями
+  window.disableSavings = function() {
+    if (confirm('Отключить виджет накоплений?')) {
+      savingsData.enabled = false;
+      localStorage.setItem('savingsData', JSON.stringify(savingsData));
+      updateUI();
+    }
+  };
+
+  window.addToSavings = function() {
+    const input = document.getElementById('savings-amount');
+    const amount = parseFloat(input.value.replace(/\s+/g, '').replace(',', '.'));
+    
+    if (!isNaN(amount) && amount > 0) {
+      savingsData.current += amount;
+      localStorage.setItem('savingsData', JSON.stringify(savingsData));
+      input.value = '';
       updateUI();
       
       const btn = input.nextElementSibling;
@@ -740,7 +809,7 @@ document.addEventListener('DOMContentLoaded', function() {
       e.stopPropagation();
       elements.categoryMenu.classList.remove('show');
       elements.settingsMenu.classList.remove('show');
-      elements.budgetSettingsMenu.classList.remove('show');
+      elements.moreMenu.classList.remove('show');
 
       const wasVisible = elements.capitalizationMenu.classList.contains('show');
       elements.capitalizationMenu.classList.toggle('show', !wasVisible);
@@ -769,19 +838,11 @@ document.addEventListener('DOMContentLoaded', function() {
     elements.settingsBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       elements.settingsMenu.classList.toggle('show');
-      elements.budgetSettingsMenu.classList.remove('show');
+      elements.moreMenu.classList.remove('show');
     });
 
-    elements.settingsMenu.addEventListener('click', (e) => {
-      if (e.target.id === 'year-summary-btn') {
-        elements.yearSummary.classList.add('show');
-        renderYearCharts();
-        elements.settingsMenu.classList.remove('show');
-      }
-    });
-
-    elements.closeYearSummary.addEventListener('click', () => {
-      elements.yearSummary.classList.remove('show');
+    elements.closeReportsBtn.addEventListener('click', () => {
+      elements.settingsMenu.classList.remove('show');
     });
 
     // Бюджет
@@ -820,13 +881,51 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.setBudgetModal.classList.remove('show');
         updateBudgetWidget();
         
-        // Показать сообщение об успехе
         showSuccessMessage('Бюджет установлен!');
       }
     });
 
     elements.cancelBudgetBtn.addEventListener('click', () => {
       elements.setBudgetModal.classList.remove('show');
+    });
+
+    // Дополнительное меню
+    elements.moreBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      elements.moreMenu.classList.toggle('show');
+      elements.settingsMenu.classList.remove('show');
+      elements.categoryMenu.classList.remove('show');
+    });
+
+    // Виджет накоплений
+    elements.enableSavingsBtn.addEventListener('click', () => {
+      elements.moreMenu.classList.remove('show');
+      elements.savingsModal.classList.add('show');
+      elements.savingsName.value = savingsData.name || '';
+      elements.savingsGoal.value = savingsData.goal || '';
+    });
+
+    elements.saveSavingsBtn.addEventListener('click', () => {
+      const name = elements.savingsName.value.trim();
+      const goal = parseFloat(elements.savingsGoal.value.replace(/\s+/g, '').replace(',', '.'));
+      
+      if (name && !isNaN(goal) && goal > 0) {
+        savingsData = {
+          enabled: true,
+          name: name,
+          goal: goal,
+          current: savingsData.current || 0
+        };
+        localStorage.setItem('savingsData', JSON.stringify(savingsData));
+        elements.savingsModal.classList.remove('show');
+        updateUI();
+        
+        showSuccessMessage('Цель накоплений установлена!');
+      }
+    });
+
+    elements.cancelSavingsBtn.addEventListener('click', () => {
+      elements.savingsModal.classList.remove('show');
     });
 
     // Переключение месяцев
@@ -859,6 +958,17 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!elements.setBudgetModal.contains(e.target) && e.target !== elements.setBudgetBtn) {
         elements.setBudgetModal.classList.remove('show');
       }
+      if (!elements.moreMenu.contains(e.target) && e.target !== elements.moreBtn) {
+        elements.moreMenu.classList.remove('show');
+      }
+      if (!elements.savingsModal.contains(e.target) && e.target !== elements.enableSavingsBtn) {
+        elements.savingsModal.classList.remove('show');
+      }
+    });
+
+    // Запрет масштабирования
+    document.addEventListener('gesturestart', function(e) {
+      e.preventDefault();
     });
   }
 
