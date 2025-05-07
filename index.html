@@ -10,20 +10,24 @@
   <div class="app">
     <header>
       <div class="header-container">
-        <h1>     _     </h1>
-         <h2>     _     </h2>
+        <div class="header-title"></div>
         <div class="header-buttons">
-          <button id="capitalization-btn" class="neumorphic-btn">Капитализация</button>
-          <button id="category-btn" class="neumorphic-btn">Категории ▼</button>
-          <button id="settings-btn" class="neumorphic-btn">Отчёты</button>
-          <div class="theme-switch-container">
-            <span class="theme-label">Тёмная</span>
-            <label class="theme-switch">
-              <input type="checkbox" id="theme-toggle">
-              <span class="slider round"></span>
-            </label>
-          </div>
+          <button id="capitalization-btn" class="neumorphic-btn small">Капитализация</button>
+          <button id="category-btn" class="neumorphic-btn small">Категории ▼</button>
+          <button id="settings-btn" class="neumorphic-btn small">Отчёты</button>
+          <button id="more-btn" class="neumorphic-btn small">☰</button>
         </div>
+      </div>
+      
+      <div id="more-menu" class="neumorphic-menu">
+        <div class="menu-item">
+          <span>Тёмная тема</span>
+          <label class="theme-switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <button id="enable-savings-btn" class="neumorphic-btn">Включить виджет Копить</button>
       </div>
       
       <div id="settings-menu" class="neumorphic-menu financial-menu">
@@ -62,7 +66,7 @@
           <div id="top-categories-list" class="categories-list"></div>
         </div>
         
-        <button id="year-summary-btn" class="neumorphic-btn primary">Годовой отчёт</button>
+        <button id="close-reports-btn" class="neumorphic-btn primary">Закрыть</button>
       </div>
     </header>
 
@@ -81,6 +85,16 @@
       </div>
       <div class="chart-container">
         <canvas id="capitalChart"></canvas>
+      </div>
+    </div>
+
+    <div id="savings-modal" class="neumorphic-menu">
+      <h3>Цель накоплений</h3>
+      <input type="text" id="savings-name" placeholder="Название цели" class="neumorphic-input" />
+      <input type="number" id="savings-goal" placeholder="Целевая сумма (₽)" class="neumorphic-input" />
+      <div class="button-group">
+        <button id="save-savings-btn" class="neumorphic-btn primary">Сохранить</button>
+        <button id="cancel-savings-btn" class="neumorphic-btn">Отмена</button>
       </div>
     </div>
 
