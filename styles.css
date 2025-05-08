@@ -1,8 +1,8 @@
 :root {
-  --bg: #e0e5ec;
+  --bg: #f0f4f8;
   --text: #333;
   --shadow-light: #ffffff;
-  --shadow-dark: #a3b1c6;
+  --shadow-dark: #c8d0e7;
   --primary: #3498db;
   --primary-hover: #2980b9;
   --widget-color: #3498db;
@@ -32,8 +32,8 @@ body {
 
 /* Header styles */
 header {
-  padding-top: 15px;
-  margin-bottom: 15px;
+  padding-top: 25px;
+  margin-bottom: 25px;
   position: relative;
 }
 
@@ -41,10 +41,11 @@ header {
   display: flex;
   flex-direction: column;
   gap: 15px;
+  min-height: 60px;
 }
 
 .header-title {
-  height: 30px; /* Заменяем тире на пустой div с фиксированной высотой */
+  height: 30px;
 }
 
 .header-buttons {
@@ -60,6 +61,21 @@ header {
 
 .header-buttons::-webkit-scrollbar {
   display: none;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.theme-icon {
+  font-size: 18px;
+  transition: transform 0.3s ease;
 }
 
 /* Inputs and buttons */
@@ -282,8 +298,8 @@ header {
   right: 0;
   bottom: 0;
   border-radius: var(--border-radius);
-  box-shadow: 0 0 10px 3px var(--widget-color);
-  opacity: 0.3;
+  box-shadow: 0 0 15px 5px var(--widget-color);
+  opacity: 0.4;
   z-index: -1;
 }
 
@@ -691,10 +707,10 @@ canvas {
 
 /* Dark theme */
 body.dark {
-  --bg: #2e2e2e;
-  --text: #eee;
-  --shadow-light: #3a3a3a;
-  --shadow-dark: #1a1a1a;
+  --bg: #1a1a1a;
+  --text: #f0f0f0;
+  --shadow-light: #2a2a2a;
+  --shadow-dark: #0a0a0a;
   --primary: #2980b9;
   --primary-hover: #3498db;
 }
@@ -709,6 +725,10 @@ body.dark .category-item.total {
 
 body.dark .month-categories h5 {
   border-bottom-color: rgba(255,255,255,0.1);
+}
+
+body.dark .theme-icon {
+  transform: rotate(180deg);
 }
 
 /* Tablet adaptation */
