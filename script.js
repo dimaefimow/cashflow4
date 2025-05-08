@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
     avgExpense: document.getElementById('avg-expense'),
     bestMonth: document.getElementById('best-month'),
     topCategoriesList: document.getElementById('top-categories-list'),
-    themeToggle: document.getElementById('theme-toggle'),
+    themeToggleBtn: document.getElementById('theme-toggle-btn'),
     moreBtn: document.getElementById('more-btn'),
     moreMenu: document.getElementById('more-menu'),
     enableSavingsBtn: document.getElementById('enable-savings-btn'),
@@ -401,7 +401,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const today = new Date();
     const startDate = new Date(budgetData.startDate);
     const elapsedDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
-    const remainingDays = Math.max(0, budgetData.days - elapsedDays);
+    const remainingDays = Math.max(0, budgetData.days - elapsedDays + 1); // +1 день
     
     if (remainingDays <= 0) {
       elements.dailyBudgetAmount.textContent = formatCurrency(0);
@@ -490,7 +490,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Глобальные функции для работы с виджетами
   window.deleteWidget = function(category) {
-    if (confirm(`Удалить категорию "${category}" и все связанные расходы?`)) {
+    if (confirm(`Удалить категорию "${category}" только для текущего месяца?`)) {
       const monthData = financeData[currentMonth] || { income: 0, expense: 0, categories: {} };
       const categoryExpense = monthData.categories[category] || 0;
       
@@ -750,12 +750,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // Настройка темы
     if (localStorage.getItem('darkTheme') === 'true') {
       document.body.classList.add('dark');
-      elements.themeToggle.checked = true;
+      const icon = elements.themeToggleBtn.querySelector('.theme-icon');
+      icon.textContent = '☀️';
     }
     
-    elements.themeToggle.addEventListener('change', () => {
+    // Обработчик переключения темы
+    elements.themeToggleBtn.addEventListener('click', () => {
       document.body.classList.toggle('dark');
-      localStorage.setItem('darkTheme', elements.themeToggle.checked);
+      localStorage.setItem('darkTheme', document.body.classList.contains('dark'));
+      
+      const icon = elements.themeToggleBtn.querySelector('.theme-icon');
+      if (document.body.classList.contains('dark')) {
+        icon.textContent = '☀️';
+      } else {
+        icon.textContent = '🌙';
+      }
+      
       renderAllCharts();
     });
     
@@ -785,14 +795,19 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 
-    // Добавление категории
+    // Добавление категории (во все месяцы)
     elements.addCategoryBtn.addEventListener('click', () => {
       const categoryName = elements.newCategoryInput.value.trim();
-      const monthData = financeData[currentMonth] || { income: 0, expense: 0, categories: {} };
-      if (categoryName && !monthData.categories[categoryName]) {
-        monthData.categories[categoryName] = 0;
+      if (categoryName) {
+        // Добавляем категорию во все месяцы
+        for (let i = 0; i < 12; i++) {
+          const monthData = financeData[i] || { income: 0, expense: 0, categories: {} };
+          if (!monthData.categories[categoryName]) {
+            monthData.categories[categoryName] = 0;
+            financeData[i] = monthData;
+          }
+        }
         elements.newCategoryInput.value = '';
-        financeData[currentMonth] = monthData;
         saveData();
         updateUI();
       }
@@ -991,6 +1006,8 @@ document.addEventListener('DOMContentLoaded', function() {
       document.body.removeChild(successMsg);
     }, 3000);
   }
+
+  // Запуск приложения
 
   // Запуск приложения
   initializeApp();
