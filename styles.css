@@ -32,15 +32,15 @@ body {
 
 /* Header styles */
 header {
-  padding-top: 25px;
-  margin-bottom: 25px;
+  padding-top: 15px;
+  margin-bottom: 15px;
   position: relative;
 }
 
 .header-container {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
   min-height: 60px;
 }
 
@@ -50,11 +50,11 @@ header {
 
 .header-buttons {
   display: flex;
-  gap: 8px;
+  gap: 5px;
   align-items: center;
-  flex-wrap: nowrap;
-  overflow-x: auto;
+  flex-wrap: wrap;
   padding-bottom: 5px;
+  margin-top: 15px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
@@ -109,9 +109,9 @@ header {
 }
 
 .neumorphic-btn.small {
-  padding: 8px 12px;
-  font-size: 0.8rem;
-  min-width: 80px;
+  padding: 6px 8px;
+  font-size: 0.7rem;
+  min-width: 60px;
 }
 
 .neumorphic-btn:hover {
@@ -226,18 +226,18 @@ header {
 }
 
 .financial-menu {
-  width: 90%;
-  max-width: 800px;
-  padding: 20px;
+  width: 95%;
+  max-width: 350px;
+  padding: 15px;
 }
 
 #capitalization-menu {
-  width: 90%;
+  width: 95%;
   max-width: 500px;
 }
 
 .year-summary {
-  width: 90%;
+  width: 95%;
   max-width: 800px;
 }
 
@@ -607,23 +607,23 @@ canvas {
 }
 
 .daily-budget-widget .neumorphic-card {
-  padding: 15px;
+  padding: 12px;
 }
 
 .budget-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .budget-header h3 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
 #daily-budget-amount {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: bold;
   margin: 5px 0;
   color: var(--primary);
@@ -631,7 +631,7 @@ canvas {
 
 #budget-progress {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: var(--text);
   opacity: 0.8;
 }
@@ -643,7 +643,7 @@ canvas {
   transform: translate(-50%, -50%);
   width: 90%;
   max-width: 350px;
-  padding: 20px;
+  padding: 15px;
 }
 
 #set-budget-modal h3 {
@@ -747,6 +747,7 @@ body.dark .theme-icon {
     overflow-x: visible;
     justify-content: flex-end;
     flex: 1;
+    margin-top: 0;
   }
   
   .header-title {
@@ -771,7 +772,8 @@ body.dark .theme-icon {
   }
   
   .neumorphic-btn.small {
-    min-width: 100px;
+    min-width: 80px;
+    font-size: 0.8rem;
   }
   
   .neumorphic-card {
@@ -929,7 +931,7 @@ body.dark .theme-icon {
   }
   
   .neumorphic-btn.small {
-    min-width: 70px;
+    min-width: 60px;
     padding: 6px 8px;
     font-size: 0.7rem;
   }
