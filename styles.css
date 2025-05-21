@@ -54,8 +54,7 @@ header {
   align-items: center;
   flex-wrap: wrap;
   padding-bottom: 5px;
-  margin-top: 25px;
-  margin-bottom: 15px;
+  margin-top: 15px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
@@ -174,7 +173,38 @@ header {
               -8px -8px 15px var(--shadow-light);
 }
 
-/* Menus */
+/* Category menu - updated styles */
+#category-menu {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-height: 70vh;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease;
+  box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
+  padding: 15px 15px 30px;
+  z-index: 1000;
+}
+
+#category-menu::before {
+  content: '';
+  display: block;
+  width: 50px;
+  height: 4px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 2px;
+  margin: 0 auto 15px;
+}
+
+#category-menu.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Other menus */
 .neumorphic-menu {
   display: none;
   position: fixed;
@@ -195,30 +225,17 @@ header {
   transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* Bottom menus */
-#more-menu,
-#category-menu,
-#budget-settings-menu,
-#savings-modal {
-  top: auto;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  max-height: 60vh;
-}
-
 #more-menu {
   width: 250px;
   padding: 15px;
-  right: auto;
-  left: 50%;
-  transform: translateX(-50%);
-  top: auto;
-  bottom: 20px;
+  right: 10px;
+  left: auto;
+  transform: none;
+  top: 60px;
 }
 
 #more-menu.show {
-  transform: translateX(-50%);
+  transform: none;
   opacity: 1;
 }
 
@@ -231,18 +248,18 @@ header {
 
 .category-menu, 
 .budget-settings-menu {
-  position: fixed;
-  top: auto;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-top: 0;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
   max-height: 60vh;
+  transform: none;
 }
 
 .financial-menu {
+  overflow-x: hidden;   
   width: 95%;
-  max-width: 320px;
+  max-width: 350px;
   padding: 15px;
 }
 
@@ -261,19 +278,6 @@ header {
   opacity: 1;
   transform: translate(-50%, -50%);
   animation: none;
-}
-
-/* Bottom menu close button */
-.neumorphic-menu:not(.financial-menu):not(#capitalization-menu):not(.year-summary)::after {
-  content: 'Закрыть';
-  display: block;
-  text-align: center;
-  margin-top: 15px;
-  padding: 10px;
-  background: var(--primary);
-  color: white;
-  border-radius: var(--border-radius);
-  cursor: pointer;
 }
 
 /* Summary section */
@@ -475,7 +479,7 @@ canvas {
 /* Financial cards */
 .financial-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 15px;
   margin-bottom: 20px;
 }
@@ -548,27 +552,22 @@ canvas {
   box-shadow: 3px 3px 6px var(--shadow-dark), 
               -3px -3px 6px var(--shadow-light);
   width: 100%;
-  overflow-x: hidden;
 }
 
 .top-categories-report h4 {
-  margin: 0 0 15px 0;
+  margin: 0 0 20px 0;
   text-align: center;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   color: var(--primary);
 }
 
-.top-categories-report h4::before {
-  content: "Существенные траты";
-}
-
 .categories-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 15px;
   max-height: 400px;
   overflow-y: auto;
-  padding: 10px 5px 10px 0;
+  padding: 10px;
 }
 
 .month-categories {
@@ -577,7 +576,6 @@ canvas {
   padding: 15px;
   box-shadow: 3px 3px 6px var(--shadow-dark), 
               -3px -3px 6px var(--shadow-light);
-  min-width: 100%;
 }
 
 .month-categories h5 {
@@ -824,7 +822,7 @@ body.dark .theme-icon {
   }
   
   .financial-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
   
   .financial-charts {
@@ -850,6 +848,21 @@ body.dark .theme-icon {
   .month-categories h5 {
     font-size: 1.1rem;
   }
+
+  /* Category menu tablet styles */
+  #category-menu {
+    left: 50%;
+    right: auto;
+    width: 400px;
+    max-width: 90vw;
+    border-radius: var(--border-radius);
+    transform: translate(-50%, 100%);
+    bottom: 20px;
+  }
+  
+  #category-menu.show {
+    transform: translate(-50%, 0);
+  }
 }
 
 /* Desktop adaptation */
@@ -863,7 +876,7 @@ body.dark .theme-icon {
   }
   
   .financial-menu {
-    max-width: 400px;
+    max-width: 800px;
   }
   
   .financial-chart-container canvas {
@@ -886,7 +899,6 @@ body.dark .theme-icon {
   .header-buttons {
     width: 100%;
     justify-content: space-between;
-    margin-top: 20px;
   }
   
   .neumorphic-menu {
@@ -894,11 +906,7 @@ body.dark .theme-icon {
     padding: 10px;
   }
   
-  .financial-menu {
-    width: 95vw;
-    max-width: 320px;
-  }
-  
+  .financial-menu, 
   #capitalization-menu,
   .year-summary {
     width: 95vw;
@@ -907,14 +915,13 @@ body.dark .theme-icon {
   
   .category-menu, 
   .budget-settings-menu {
-    width: 95vw;
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: var(--border-radius);
+    width: 100vw;
+    left: -10px;
+    border-radius: 0 0 15px 15px;
   }
   
   .financial-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr;
   }
   
   .financial-charts {
@@ -926,8 +933,7 @@ body.dark .theme-icon {
   }
   
   .categories-list {
-    display: flex;
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
   
   .top-categories-report {
@@ -944,10 +950,6 @@ body.dark .theme-icon {
   
   .financial-value {
     font-size: 1.2rem;
-  }
-  
-  .month-tabs {
-    justify-content: space-around;
   }
 }
 
@@ -979,9 +981,5 @@ body.dark .theme-icon {
     min-width: 60px;
     padding: 6px 8px;
     font-size: 0.7rem;
-  }
-  
-  .financial-grid {
-    grid-template-columns: repeat(2, 1fr);
   }
 }
