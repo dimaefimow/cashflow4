@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function() {
   // Текущий месяц (0-11)
   let currentMonth = new Date().getMonth();
@@ -74,6 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
     cancelBudgetBtn: document.getElementById('cancel-budget-btn'),
     miniCapitalChart: document.getElementById('miniCapitalChart'),
     miniExpenseChart: document.getElementById('miniExpenseChart'),
+    totalCapital: document.getElementById('total-capital'),
     avgIncome: document.getElementById('avg-income'),
     avgExpense: document.getElementById('avg-expense'),
     bestMonth: document.getElementById('best-month'),
@@ -118,8 +120,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Обновление списка категорий
   function updateCategoriesList() {
-    if (!elements.categoriesList) return;
-    
     elements.categoriesList.innerHTML = '';
     const categories = financeData[currentMonth].categories || {};
     
@@ -158,62 +158,100 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // Закрытие всех меню
-  function closeAllMenus() {
-    const menus = [
-      elements.categoryMenu,
-      elements.capitalizationMenu,
-      elements.settingsMenu,
-      elements.yearSummary,
-      elements.budgetSettingsMenu,
-      elements.setBudgetModal,
-      elements.moreMenu,
-      elements.savingsModal
-    ];
-    
-    menus.forEach(menu => {
-      if (menu) menu.classList.remove('show');
-    });
-  }
-
-  // Обновление меню отчетов
-  function updateReportsMenu() {
-    if (!elements.settingsMenu) return;
-    
-    // Средние значения за год
+  // Обновление финансовых показателей
+  function updateFinancialMetrics() {
+    let totalCap = 0;
     let totalIncome = 0;
     let totalExpense = 0;
-    let bestMonthValue = -Infinity;
-    let bestMonthName = 'Нет данных';
-    let bestMonthProfit = 0;
+    let bestMonthValue = 0;
+    let bestMonthName = '';
+    let bestMonthIndex = -1;
     
     for (let i = 0; i < 12; i++) {
-      const monthData = financeData[i] || { income: 0, expense: 0 };
+      const monthData = financeData[i] || { income: 0, expense: 0, capital: 0 };
+      totalCap += monthData.capital || 0;
       totalIncome += monthData.income || 0;
       totalExpense += monthData.expense || 0;
       
-      const profit = monthData.income - monthData.expense;
-      if (profit > bestMonthValue) {
-        bestMonthValue = profit;
+      if (monthData.income > bestMonthValue) {
+        bestMonthValue = monthData.income;
         bestMonthName = monthNames[i];
-        bestMonthProfit = profit;
+        bestMonthIndex = i;
       }
     }
     
-    if (elements.avgIncome) {
-      elements.avgIncome.textContent = formatCurrency(Math.round(totalIncome / 12));
-    }
+    elements.totalCapital.textContent = formatCurrency(totalCap);
+    elements.avgIncome.textContent = formatCurrency(Math.round(totalIncome / 12));
+    elements.avgExpense.textContent = formatCurrency(Math.round(totalExpense / 12));
     
-    if (elements.avgExpense) {
-      elements.avgExpense.textContent = formatCurrency(Math.round(totalExpense / 12));
-    }
-    
-    if (elements.bestMonth) {
-      elements.bestMonth.textContent = `${bestMonthName}\n${formatCurrency(bestMonthProfit)}`;
+    if (bestMonthIndex >= 0) {
+      const monthData = financeData[bestMonthIndex];
+      const profit = monthData.income - monthData.expense;
+      elements.bestMonth.textContent = `${bestMonthName}\n+${formatCurrency(profit)}`;
+    } else {
+      elements.bestMonth.textContent = 'Нет данных';
     }
     
     renderMiniCharts();
     renderTopCategoriesReport();
+  }
+
+  // Отображение самых затратных категорий
+  function renderTopCategoriesReport() {
+    elements.topCategoriesList.innerHTML = '';
+    
+    // Сортируем месяцы от текущего к прошлому
+    const sortedMonths = [];
+    for (let i = 0; i < 12; i++) {
+      const monthIndex = (currentMonth - i + 12) % 12;
+      sortedMonths.push(monthIndex);
+    }
+
+    sortedMonths.forEach(monthIndex => {
+      const monthData = financeData[monthIndex] || { categories: {} };
+      const categories = Object.entries(monthData.categories);
+      
+      if (categories.length > 0) {
+        // Сортируем категории по убыванию расходов
+        categories.sort((a, b) => b[1] - a[1]);
+        
+        const monthElement = document.createElement('div');
+        monthElement.className = 'month-categories';
+        monthElement.innerHTML = `<h5>${monthNames[monthIndex]}</h5>`;
+        
+        // Берем топ-3 категории или все, если их меньше 3
+        const topCategories = categories.slice(0, 3);
+        
+        // Добавляем общую сумму расходов за месяц
+        const totalExpense = categories.reduce((sum, [_, amount]) => sum + amount, 0);
+        const totalElement = document.createElement('div');
+        totalElement.className = 'category-item total';
+        totalElement.innerHTML = `
+          <span>Всего расходов</span>
+          <strong>${formatCurrency(totalExpense)}</strong>
+        `;
+        monthElement.appendChild(totalElement);
+        
+        topCategories.forEach(([category, amount], index) => {
+          const percent = Math.round((amount / totalExpense) * 100);
+          const categoryElement = document.createElement('div');
+          categoryElement.className = 'category-item';
+          categoryElement.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="color: ${categoryColors[index % categoryColors.length]}; font-weight: bold;">■</span>
+              <span>${category}</span>
+            </div>
+            <div style="text-align: right;">
+              <div>${formatCurrency(amount)}</div>
+              <small style="color: ${document.body.classList.contains('dark') ? '#aaa' : '#666'}">${percent}%</small>
+            </div>
+          `;
+          monthElement.appendChild(categoryElement);
+        });
+        
+        elements.topCategoriesList.appendChild(monthElement);
+      }
+    });
   }
 
   // Отрисовка мини-графиков
@@ -224,14 +262,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     for (let i = 0; i < 12; i++) {
       const monthData = financeData[i] || { income: 0, expense: 0, capital: 0 };
-      capitalData.push(monthData.capital || 0);
-      expenseData.push(monthData.expense || 0);
+      capitalData.push(monthData.capital);
+      expenseData.push(monthData.expense);
     }
     
     // График капитализации
     if (miniCapitalChart) miniCapitalChart.destroy();
-    if (elements.miniCapitalChart) {
-      miniCapitalChart = new Chart(elements.miniCapitalChart.getContext('2d'), {
+    const capitalCtx = elements.miniCapitalChart?.getContext('2d');
+    if (capitalCtx) {
+      miniCapitalChart = new Chart(capitalCtx, {
         type: 'line',
         data: {
           labels: labels,
@@ -250,8 +289,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // График расходов
     if (miniExpenseChart) miniExpenseChart.destroy();
-    if (elements.miniExpenseChart) {
-      miniExpenseChart = new Chart(elements.miniExpenseChart.getContext('2d'), {
+    const expenseCtx = elements.miniExpenseChart?.getContext('2d');
+    if (expenseCtx) {
+      miniExpenseChart = new Chart(expenseCtx, {
         type: 'bar',
         data: {
           labels: labels,
@@ -264,76 +304,6 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         options: getChartOptions('Расходы')
       });
-    }
-  }
-
-  // Отрисовка топовых категорий
-  function renderTopCategoriesReport() {
-    if (!elements.topCategoriesList) return;
-    
-    elements.topCategoriesList.innerHTML = '';
-    
-    // Собираем данные по месяцам
-    const months = [];
-    for (let i = 0; i < 12; i++) {
-      const monthData = financeData[i] || { income: 0, expense: 0, categories: {} };
-      const totalExpense = Object.values(monthData.categories).reduce((sum, val) => sum + val, 0);
-      if (totalExpense > 0) {
-        months.push({
-          index: i,
-          name: monthNames[i],
-          totalExpense: totalExpense,
-          categories: Object.entries(monthData.categories)
-        });
-      }
-    }
-    
-    // Сортируем месяцы по сумме расходов
-    months.sort((a, b) => b.totalExpense - a.totalExpense);
-    
-    // Ограничиваем количество месяцев для отображения
-    const topMonths = months.slice(0, 3);
-    
-    topMonths.forEach(month => {
-      const monthElement = document.createElement('div');
-      monthElement.className = 'month-categories';
-      monthElement.innerHTML = `<h5>${month.name}</h5>`;
-      
-      // Общая сумма расходов
-      const totalElement = document.createElement('div');
-      totalElement.className = 'category-item total';
-      totalElement.innerHTML = `
-        <span>Всего расходов</span>
-        <strong>${formatCurrency(month.totalExpense)}</strong>
-      `;
-      monthElement.appendChild(totalElement);
-      
-      // Топ-3 категории
-      month.categories
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 3)
-        .forEach(([category, amount], index) => {
-          const percent = Math.round((amount / month.totalExpense) * 100);
-          const categoryElement = document.createElement('div');
-          categoryElement.className = 'category-item';
-          categoryElement.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="color: ${categoryColors[index % categoryColors.length]}; font-weight: bold;">■</span>
-              <span>${category}</span>
-            </div>
-            <div style="text-align: right;">
-              <div>${formatCurrency(amount)}</div>
-              <small style="color: ${document.body.classList.contains('dark') ? '#aaa' : '#666'}">${percent}%</small>
-            </div>
-          `;
-          monthElement.appendChild(categoryElement);
-        });
-      
-      elements.topCategoriesList.appendChild(monthElement);
-    });
-    
-    if (topMonths.length === 0) {
-      elements.topCategoriesList.innerHTML = '<p style="text-align: center; opacity: 0.7;">Нет данных о расходах</p>';
     }
   }
 
@@ -390,13 +360,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const monthData = financeData[currentMonth] || { income: 0, expense: 0, categories: {} };
     const capital = monthData.capital || 0;
     
-    if (elements.incomeDisplay) {
-      elements.incomeDisplay.textContent = formatCurrency(monthData.income);
-    }
-    
-    if (elements.expenseDisplay) {
-      elements.expenseDisplay.textContent = formatCurrency(monthData.expense);
-    }
+    elements.incomeDisplay.textContent = formatCurrency(monthData.income);
+    elements.expenseDisplay.textContent = formatCurrency(monthData.expense);
     
     // Расчет процента остатка
     const remaining = monthData.income - monthData.expense;
@@ -404,32 +369,44 @@ document.addEventListener('DOMContentLoaded', function() {
         ? Math.round((remaining / monthData.income) * 100)
         : 0;
     
-    if (elements.percentDisplay) {
-      elements.percentDisplay.textContent = (remaining < 0 ? '-' : '') + Math.abs(percentage) + '%';
-      
-      if (remaining < 0) {
+    elements.percentDisplay.textContent = (remaining < 0 ? '-' : '') + Math.abs(percentage) + '%';
+    
+    if (remaining < 0) {
         elements.percentDisplay.classList.add('negative');
-      } else {
+    } else {
         elements.percentDisplay.classList.remove('negative');
         elements.percentDisplay.style.color = percentage < 20 ? '#f39c12' : '#2ecc71';
-      }
     }
     
-    if (elements.capitalDisplay) {
-      elements.capitalDisplay.textContent = formatCurrency(capital);
+    elements.capitalDisplay.textContent = formatCurrency(capital);
+
+    // Обновление бюджета
+    if (budgetData.startDate) {
+        const today = new Date();
+        const budgetStartDate = new Date(budgetData.startDate);
+        
+        if (today.getMonth() === budgetStartDate.getMonth() && 
+            today.getFullYear() === budgetStartDate.getFullYear()) {
+            // Обновляем потраченную сегодня сумму
+            const todayStr = today.toISOString().split('T')[0];
+            if (budgetData.dailyHistory[todayStr]) {
+                budgetData.dailyHistory[todayStr].spentToday = 
+                    Object.values(monthData.categories).reduce((sum, val) => sum + val, 0);
+                localStorage.setItem('budgetData', JSON.stringify(budgetData));
+            }
+        }
     }
-    
+
     updateBudgetWidget();
-    updateReportsMenu();
+    updateFinancialMetrics();
     renderWidgets();
     renderAllCharts();
     renderSavingsWidget();
-  }
+}
 
-  // Обновление виджета бюджета
-  function updateBudgetWidget() {
-    if (!elements.dailyBudgetAmount || !elements.budgetProgress) return;
-    
+  // Обновление виджета бюджета (ИСПРАВЛЕННАЯ ВЕРСИЯ)
+  // Обновление виджета бюджета (ИСПРАВЛЕННАЯ ВЕРСИЯ)
+function updateBudgetWidget() {
     if (!budgetData.startDate) {
         elements.dailyBudgetAmount.textContent = formatCurrency(0);
         elements.budgetProgress.textContent = 'Не задано';
@@ -505,22 +482,20 @@ document.addEventListener('DOMContentLoaded', function() {
             Object.values(monthData.categories).reduce((sum, val) => sum + val, 0);
         localStorage.setItem('budgetData', JSON.stringify(budgetData));
     }
-  }
+}
 
   // Отрисовка всех графиков
   function renderAllCharts() {
     renderChart();
     renderCapitalChart();
     renderMiniCharts();
-    if (elements.yearSummary && elements.yearSummary.classList.contains('show')) {
+    if (elements.yearSummary.classList.contains('show')) {
       renderYearCharts();
     }
   }
 
   // Отрисовка виджетов категорий
   function renderWidgets() {
-    if (!elements.widgetsContainer) return;
-    
     elements.widgetsContainer.innerHTML = '';
     const categories = financeData[currentMonth].categories || {};
     
@@ -562,7 +537,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Отрисовка виджета накоплений
   function renderSavingsWidget() {
-    if (!savingsData.enabled || !elements.widgetsContainer) return;
+    if (!savingsData.enabled) return;
     
     const widget = document.createElement('div');
     widget.className = 'neumorphic-card widget savings-widget';
@@ -608,8 +583,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // Добавление расхода к категории
   function addExpenseToCategory(category) {
     const input = document.getElementById(`expense-${category}`);
-    if (!input) return;
-    
     const expenseVal = parseFloat(input.value.replace(/\s+/g, '').replace(',', '.'));
     const monthData = financeData[currentMonth] || { income: 0, expense: 0, categories: {} };
 
@@ -623,10 +596,8 @@ document.addEventListener('DOMContentLoaded', function() {
       updateUI();
       
       const btn = input.nextElementSibling;
-      if (btn) {
-        btn.classList.add('pulse');
-        setTimeout(() => btn.classList.remove('pulse'), 500);
-      }
+      btn.classList.add('pulse');
+      setTimeout(() => btn.classList.remove('pulse'), 500);
     }
   }
 
@@ -642,8 +613,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // Добавление к накоплениям
   function addToSavings() {
     const input = document.getElementById('savings-amount');
-    if (!input) return;
-    
     const amount = parseFloat(input.value.replace(/\s+/g, '').replace(',', '.'));
     
     if (!isNaN(amount) && amount > 0) {
@@ -653,10 +622,8 @@ document.addEventListener('DOMContentLoaded', function() {
       updateUI();
       
       const btn = input.nextElementSibling;
-      if (btn) {
-        btn.classList.add('pulse');
-        setTimeout(() => btn.classList.remove('pulse'), 500);
-      }
+      btn.classList.add('pulse');
+      setTimeout(() => btn.classList.remove('pulse'), 500);
     }
   }
 
@@ -857,7 +824,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Настройка обработчиков событий
   function setupEventHandlers() {
     // Добавление дохода
-    elements.addIncomeBtn?.addEventListener('click', () => {
+    elements.addIncomeBtn.addEventListener('click', () => {
       const incomeVal = parseFloat(elements.incomeInput.value.replace(/\s+/g, '').replace(',', '.'));
       const monthData = financeData[currentMonth] || { income: 0, expense: 0, categories: {} };
 
@@ -874,7 +841,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Добавление категории (во все месяцы)
-    elements.addCategoryBtn?.addEventListener('click', () => {
+    elements.addCategoryBtn.addEventListener('click', () => {
       const categoryName = elements.newCategoryInput.value.trim();
       if (categoryName) {
         // Добавляем категорию во все месяцы
@@ -892,241 +859,280 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Меню категорий
-    elements.categoryBtn?.addEventListener('click', (e) => {
+    elements.categoryBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      elements.categoryMenu.classList.toggle('show');
+      // Закрываем другие меню
+      elements.capitalizationMenu.classList.remove('show');
+      elements.settingsMenu.classList.remove('show');
+      elements.moreMenu.classList.remove('show');
+      
+      // Переключаем меню категорий
+      const wasVisible = elements.categoryMenu.classList.contains('show');
+      elements.categoryMenu.classList.toggle('show', !wasVisible);
     });
 
     // Капитализация
-    elements.capitalizationBtn?.addEventListener('click', (e) => {
+    elements.capitalizationBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      closeAllMenus();
-      elements.capitalizationMenu.classList.add('show');
-      elements.capitalInput.value = financeData[currentMonth].capital || '';
-      elements.capitalInput.focus();
+      elements.categoryMenu.classList.remove('show');
+      elements.settingsMenu.classList.remove('show');
+      elements.moreMenu.classList.remove('show');
+
+      const wasVisible = elements.capitalizationMenu.classList.contains('show');
+      elements.capitalizationMenu.classList.toggle('show', !wasVisible);
+
+      if (!wasVisible) {
+        elements.capitalInput.value = financeData[currentMonth].capital || '';
+        elements.capitalInput.focus();
+      }
     });
 
-    elements.saveCapitalBtn?.addEventListener('click', () => {
+    elements.saveCapitalBtn.addEventListener('click', () => {
       const capitalVal = parseFloat(elements.capitalInput.value.replace(/\s+/g, '').replace(',', '.'));
       if (!isNaN(capitalVal)) {
         financeData[currentMonth].capital = capitalVal;
         saveData();
         updateUI();
-        closeAllMenus();
+        elements.capitalizationMenu.classList.remove('show');
       }
     });
 
-    elements.cancelCapitalBtn?.addEventListener('click', closeAllMenus);
+    elements.cancelCapitalBtn.addEventListener('click', () => {
+      elements.capitalizationMenu.classList.remove('show');
+    });
 
     // Настройки/отчеты
-    elements.settingsBtn?.addEventListener('click', (e) => {
+    elements.settingsBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      closeAllMenus();
-      elements.settingsMenu.classList.add('show');
+      elements.settingsMenu.classList.toggle('show');
+      elements.moreMenu.classList.remove('show');
     });
 
-    elements.closeReportsBtn?.addEventListener('click', closeAllMenus);
+    elements.closeReportsBtn.addEventListener('click', () => {
+      elements.settingsMenu.classList.remove('show');
+    });
 
     // Бюджет
-    elements.budgetSettingsBtn?.addEventListener('click', (e) => {
+    elements.budgetSettingsBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      closeAllMenus();
-      elements.budgetSettingsMenu.classList.add('show');
+      elements.budgetSettingsMenu.classList.toggle('show');
     });
 
-    elements.setBudgetBtn?.addEventListener('click', () => {
-      closeAllMenus();
+    elements.setBudgetBtn.addEventListener('click', () => {
+      elements.budgetSettingsMenu.classList.remove('show');
       elements.setBudgetModal.classList.add('show');
       elements.budgetAmount.value = '';
       elements.budgetDays.value = '';
     });
 
-    elements.saveBudgetBtn?.addEventListener('click', () => {
-      const amount = parseFloat(elements.budgetAmount.value.replace(/\s+/g, '').replace(',', '.'));
+    elements.saveBudgetBtn.addEventListener('click', () => {
+      const amount =
+parseFloat(elements.budgetAmount.value.replace(/\s+/g, '').replace(',', '.'));
       const days = parseInt(elements.budgetDays.value);
       
       if (!isNaN(amount) && !isNaN(days) && days > 0) {
         const today = new Date();
         budgetData = {
-          totalAmount: amount, days: days,
-startDate: today.toISOString(),
-spent: 0,
-dailyHistory: {
-[today.toISOString().split('T')[0]]: {
-date: today.toISOString().split('T')[0],
-dailyBudget: amount / days,
-spentToday: 0
-}
-}
-};
-localStorage.setItem('budgetData', JSON.stringify(budgetData));
-closeAllMenus();
-updateBudgetWidget();
+          totalAmount: amount,
+          days: days,
+          startDate: today.toISOString(),
+          spent: 0,
+          dailyHistory: {
+            [today.toISOString().split('T')[0]]: {
+              date: today.toISOString().split('T')[0],
+              dailyBudget: amount / days,
+              spentToday: 0
+            }
+          }
+        };
+        localStorage.setItem('budgetData', JSON.stringify(budgetData));
+        elements.setBudgetModal.classList.remove('show');
+        updateBudgetWidget();
+        
+        showSuccessMessage('Бюджет установлен!');
+      }
+    });
 
-       showSuccessMessage('Бюджет установлен!');
+    elements.cancelBudgetBtn.addEventListener('click', () => {
+      elements.setBudgetModal.classList.remove('show');
+    });
+
+    // Дополнительное меню
+    elements.moreBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      elements.moreMenu.classList.toggle('show');
+      elements.settingsMenu.classList.remove('show');
+      elements.categoryMenu.classList.remove('show');
+    });
+
+    // Виджет накоплений
+    elements.enableSavingsBtn.addEventListener('click', () => {
+      elements.moreMenu.classList.remove('show');
+      elements.savingsModal.classList.add('show');
+      elements.savingsName.value = savingsData.name || '';
+      elements.savingsGoal.value = savingsData.goal || '';
+    });
+
+    elements.saveSavingsBtn.addEventListener('click', () => {
+      const name = elements.savingsName.value.trim();
+      const goal = parseFloat(elements.savingsGoal.value.replace(/\s+/g, '').replace(',', '.'));
+      
+      if (name && !isNaN(goal) && goal > 0) {
+        savingsData = {
+          enabled: true,
+          name: name,
+          goal: goal,
+          current: savingsData.current || 0
+        };
+        localStorage.setItem('savingsData', JSON.stringify(savingsData));
+        elements.savingsModal.classList.remove('show');
+        updateUI();
+        
+        showSuccessMessage('Цель накоплений установлена!');
+      }
+    });
+
+        elements.cancelSavingsBtn.addEventListener('click', () => {
+      elements.savingsModal.classList.remove('show');
+    });
+
+    // Переключение месяцев
+    elements.monthTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        elements.monthTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentMonth = parseInt(tab.dataset.month);
+        updateUI();
+      });
+    });
+
+    // Закрытие меню при клике вне их
+    document.addEventListener('click', (e) => {
+      if (!elements.categoryMenu.contains(e.target) && e.target !== elements.categoryBtn) {
+        elements.categoryMenu.classList.remove('show');
+      }
+      if (!elements.capitalizationMenu.contains(e.target) && e.target !== elements.capitalizationBtn) {
+        elements.capitalizationMenu.classList.remove('show');
+      }
+      if (!elements.settingsMenu.contains(e.target) && e.target !== elements.settingsBtn) {
+        elements.settingsMenu.classList.remove('show');
+      }
+      if (!elements.yearSummary.contains(e.target) && e.target !== elements.settingsBtn) {
+        elements.yearSummary.classList.remove('show');
+      }
+      if (!elements.budgetSettingsMenu.contains(e.target) && e.target !== elements.budgetSettingsBtn) {
+        elements.budgetSettingsMenu.classList.remove('show');
+      }
+      if (!elements.setBudgetModal.contains(e.target) && e.target !== elements.setBudgetBtn) {
+        elements.setBudgetModal.classList.remove('show');
+      }
+      if (!elements.moreMenu.contains(e.target) && e.target !== elements.moreBtn) {
+        elements.moreMenu.classList.remove('show');
+      }
+      if (!elements.savingsModal.contains(e.target) && e.target !== elements.enableSavingsBtn) {
+        elements.savingsModal.classList.remove('show');
+      }
+    });
+
+    // Запрет масштабирования
+    document.addEventListener('gesturestart', function(e) {
+      e.preventDefault();
+    });
+
+    // Обработчик ввода дохода по нажатию Enter
+    elements.incomeInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        elements.addIncomeBtn.click();
+      }
+    });
+
+    // Обработчик ввода новой категории по нажатию Enter
+    elements.newCategoryInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        elements.addCategoryBtn.click();
+      }
+    });
+
+    // Обработчик ввода капитализации по нажатию Enter
+    elements.capitalInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        elements.saveCapitalBtn.click();
+      }
+    });
+
+    // Обработчик ввода бюджета по нажатию Enter
+    elements.budgetAmount.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        elements.saveBudgetBtn.click();
+      }
+    });
+
+    elements.budgetDays.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        elements.saveBudgetBtn.click();
+      }
+    });
+
+    // Обработчик ввода цели накоплений по нажатию Enter
+    elements.savingsName.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        elements.saveSavingsBtn.click();
+      }
+    });
+
+    elements.savingsGoal.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        elements.saveSavingsBtn.click();
+      }
+    });
   }
-});
 
-elements.cancelBudgetBtn?.addEventListener('click', closeAllMenus);
-
-// Дополнительное меню
-elements.moreBtn?.addEventListener('click', (e) => {
-  e.stopPropagation();
-  closeAllMenus();
-  elements.moreMenu.classList.add('show');
-});
-
-// Виджет накоплений
-elements.enableSavingsBtn?.addEventListener('click', () => {
-  closeAllMenus();
-  elements.savingsModal.classList.add('show');
-  elements.savingsName.value = savingsData.name || '';
-  elements.savingsGoal.value = savingsData.goal || '';
-});
-
-elements.saveSavingsBtn?.addEventListener('click', () => {
-  const name = elements.savingsName.value.trim();
-  const goal = parseFloat(elements.savingsGoal.value.replace(/\s+/g, '').replace(',', '.'));
-  
-  if (name && !isNaN(goal) && goal > 0) {
-    savingsData = {
-      enabled: true,
-      name: name,
-      goal: goal,
-      current: savingsData.current || 0
-    };
-    localStorage.setItem('savingsData', JSON.stringify(savingsData));
-    closeAllMenus();
-    updateUI();
+  // Инициализация приложения
+  function initializeApp() {
+    // Установка активного месяца
+    elements.monthTabs[currentMonth].classList.add('active');
     
-    showSuccessMessage('Цель накоплений установлена!');
-  }
-});
-
-elements.cancelSavingsBtn?.addEventListener('click', closeAllMenus);
-
-// Переключение месяцев
-elements.monthTabs?.forEach(tab => {
-  tab.addEventListener('click', () => {
-    elements.monthTabs.forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    currentMonth = parseInt(tab.dataset.month);
+    // Проверка бюджета
+    if (budgetData.startDate) {
+      const today = new Date();
+      const lastBudgetDate = new Date(budgetData.startDate);
+      
+      if (today.getDate() !== lastBudgetDate.getDate() || 
+          today.getMonth() !== lastBudgetDate.getMonth() || 
+          today.getFullYear() !== lastBudgetDate.getFullYear()) {
+        updateBudgetWidget();
+      }
+    }
+    
+    // Настройка темы
+    if (localStorage.getItem('darkTheme') === 'true') {
+      document.body.classList.add('dark');
+      const icon = elements.themeToggleBtn.querySelector('.theme-icon');
+      icon.textContent = '☀️';
+    }
+    
+    // Обработчик переключения темы
+    elements.themeToggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('darkTheme', document.body.classList.contains('dark'));
+      
+      const icon = elements.themeToggleBtn.querySelector('.theme-icon');
+      if (document.body.classList.contains('dark')) {
+        icon.textContent = '☀️';
+      } else {
+        icon.textContent = '🌙';
+      }
+      
+      renderAllCharts();
+    });
+    
+    // Настройка обработчиков событий
+    setupEventHandlers();
+    
+    // Первоначальное обновление UI
     updateUI();
-  });
-});
-
-// Обработчики ввода по нажатию Enter
-elements.incomeInput?.addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') elements.addIncomeBtn.click();
-});
-
-elements.newCategoryInput?.addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') elements.addCategoryBtn.click();
-});
-
-elements.capitalInput?.addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') elements.saveCapitalBtn.click();
-});
-
-elements.budgetAmount?.addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') elements.saveBudgetBtn.click();
-});
-
-elements.budgetDays?.addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') elements.saveBudgetBtn.click();
-});
-
-elements.savingsName?.addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') elements.saveSavingsBtn.click();
-});
-
-elements.savingsGoal?.addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') elements.saveSavingsBtn.click();
-});
-
-// Закрытие меню при клике вне их
-document.addEventListener('click', (e) => {
-  if (!elements.categoryMenu?.contains(e.target) && e.target !== elements.categoryBtn) {
-    elements.categoryMenu?.classList.remove('show');
   }
-  if (!elements.capitalizationMenu?.contains(e.target) && e.target !== elements.capitalizationBtn) {
-    elements.capitalizationMenu?.classList.remove('show');
-  }
-  if (!elements.settingsMenu?.contains(e.target) && e.target !== elements.settingsBtn) {
-    elements.settingsMenu?.classList.remove('show');
-  }
-  if (!elements.yearSummary?.contains(e.target) && e.target !== elements.settingsBtn) {
-    elements.yearSummary?.classList.remove('show');
-  }
-  if (!elements.budgetSettingsMenu?.contains(e.target) && e.target !== elements.budgetSettingsBtn) {
-    elements.budgetSettingsMenu?.classList.remove('show');
-  }
-  if (!elements.setBudgetModal?.contains(e.target) && e.target !== elements.setBudgetBtn) {
-    elements.setBudgetModal?.classList.remove('show');
-  }
-  if (!elements.moreMenu?.contains(e.target) && e.target !== elements.moreBtn) {
-    elements.moreMenu?.classList.remove('show');
-  }
-  if (!elements.savingsModal?.contains(e.target) && e.target !== elements.enableSavingsBtn) {
-    elements.savingsModal?.classList.remove('show');
-  }
+
+  // Запуск приложения
+  initializeApp();
 });
-
-// Запрет масштабирования
-document.addEventListener('gesturestart', function(e) {
-  e.preventDefault();
-});
-
-
-}
-
-// Инициализация приложения
-function initializeApp() {
-// Установка активного месяца
-elements.monthTabs?.[currentMonth]?.classList.add('active');
-
-// Проверка бюджета
-if (budgetData.startDate) {
-  const today = new Date();
-  const lastBudgetDate = new Date(budgetData.startDate);
-  
-  if (today.getMonth() !== lastBudgetDate.getMonth() || 
-      today.getFullYear() !== lastBudgetDate.getFullYear()) {
-    updateBudgetWidget();
-  }
-}
-
-// Настройка темы
-if (localStorage.getItem('darkTheme') === 'true') {
-  document.body.classList.add('dark');
-  const icon = elements.themeToggleBtn?.querySelector('.theme-icon');
-  if (icon) icon.textContent = '☀️';
-}
-
-// Обработчик переключения темы
-elements.themeToggleBtn?.addEventListener('click', () => {
-  document.body.classList.toggle('dark');
-  localStorage.setItem('darkTheme', document.body.classList.contains('dark'));
-  
-  const icon = elements.themeToggleBtn?.querySelector('.theme-icon');
-  if (icon) {
-    icon.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
-  }
-  
-  renderAllCharts();
-});
-
-// Настройка обработчиков событий
-setupEventHandlers();
-
-// Первоначальное обновление UI
-updateUI();
-
-}
-
-// Запуск приложения
-initializeApp();
-});
-
-
-         
