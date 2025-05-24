@@ -28,10 +28,7 @@
       
       <div id="settings-menu" class="neumorphic-menu financial-menu">
         <div class="financial-grid">
-          <div class="financial-card">
-            <h3>Общий капитал</h3>
-            <p id="total-capital" class="financial-value">0 ₽</p>
-          </div>
+         
           <div class="financial-card">
             <h3>Средний доход</h3>
             <p id="avg-income" class="financial-value">0 ₽</p>
@@ -58,7 +55,7 @@
         </div>
         
         <div class="top-categories-report">
-          <h4>Самые затратные категории</h4>
+          <h4>Топ трат категории</h4>
           <div id="top-categories-list" class="categories-list"></div>
         </div>
         
@@ -66,10 +63,16 @@
       </div>
     </header>
 
-    <div id="category-menu" class="neumorphic-menu">
-      <input type="text" id="new-category-input" placeholder="Новая категория" class="neumorphic-input" />
-      <button id="add-category-btn" class="neumorphic-btn small">+ Добавить</button>
-      <div id="categories-list" class="categories-list"></div>
+    <div id="category-menu" class="category-widget">
+      <div class="widget-header">
+        <h3>Категории</h3>
+        <button id="close-category-widget" class="neumorphic-btn small">×</button>
+      </div>
+      <div class="widget-content">
+        <input type="text" id="new-category-input" placeholder="Новая категория" class="neumorphic-input" />
+        <button id="add-category-btn" class="neumorphic-btn small">+ Добавить</button>
+        <div id="categories-list" class="categories-list"></div>
+      </div>
     </div>
 
     <div id="capitalization-menu" class="neumorphic-menu">
