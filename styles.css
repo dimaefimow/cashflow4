@@ -412,6 +412,39 @@ header {
   overflow: hidden;
 }
 
+/* Стиль для превью виджета накоплений */
+.savings-widget-preview {
+  background: var(--bg);
+  border-radius: var(--border-radius);
+  padding: 15px;
+  box-shadow: 5px 5px 10px var(--shadow-dark), 
+              -5px -5px 10px var(--shadow-light);
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.savings-widget-preview h3 {
+  margin: 0 0 15px 0;
+  font-size: 1.1rem;
+  color: #2ecc71;
+}
+
+/* Анимация при наведении */
+.savings-widget-preview:hover {
+  transform: translateY(-3px);
+  box-shadow: 8px 8px 15px var(--shadow-dark), 
+              -8px -8px 15px var(--shadow-light);
+  transition: var(--transition);
+}
+
+/* Кнопка в стиле виджета */
+#enable-savings-btn {
+  width: 100%;
+  padding: 12px;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
 .savings-progress-bar {
   height: 100%;
   background: #2ecc71;
