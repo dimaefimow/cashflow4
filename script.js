@@ -968,6 +968,12 @@ document.addEventListener('DOMContentLoaded', function() {
       elements.savingsModal.classList.add('show');
       elements.savingsName.value = savingsData.name || '';
       elements.savingsGoal.value = savingsData.goal || '';
+
+      // Добавим анимацию
+      elements.enableSavingsBtn.classList.add('pulse');
+      setTimeout(() => {
+        elements.enableSavingsBtn.classList.remove('pulse');
+      }, 500);
     });
 
     elements.saveSavingsBtn.addEventListener('click', () => {
