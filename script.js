@@ -160,40 +160,38 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Обновление финансовых показателей
   function updateFinancialMetrics() {
-  let totalIncome = 0;
-  let totalExpense = 0;
-  let bestMonthValue = 0;
-  let bestMonthName = '';
-  let bestMonthIndex = -1;
-  
-  for (let i = 0; i < 12; i++) {
-    const monthData = financeData[i] || { income: 0, expense: 0, capital: 0 };
-    totalIncome += monthData.income || 0;
-    totalExpense += monthData.expense || 0;
+    let totalIncome = 0;
+    let totalExpense = 0;
+    let bestMonthValue = 0;
+    let bestMonthName = '';
+    let bestMonthIndex = -1;
     
-    if (monthData.income > bestMonthValue) {
-      bestMonthValue = monthData.income;
-      bestMonthName = monthNames[i];
-      bestMonthIndex = i;
+    for (let i = 0; i < 12; i++) {
+      const monthData = financeData[i] || { income: 0, expense: 0, capital: 0 };
+      totalIncome += monthData.income || 0;
+      totalExpense += monthData.expense || 0;
+      
+      if (monthData.income > bestMonthValue) {
+        bestMonthValue = monthData.income;
+        bestMonthName = monthNames[i];
+        bestMonthIndex = i;
+      }
     }
+    
+    elements.avgIncome.textContent = formatCurrency(Math.round(totalIncome / 12));
+    elements.avgExpense.textContent = formatCurrency(Math.round(totalExpense / 12));
+    
+    if (bestMonthIndex >= 0) {
+      const monthData = financeData[bestMonthIndex];
+      const profit = monthData.income - monthData.expense;
+      elements.bestMonth.textContent = `${bestMonthName}\n+${formatCurrency(profit)}`;
+    } else {
+      elements.bestMonth.textContent = 'Нет данных';
+    }
+    
+    renderMiniCharts();
+    renderTopCategoriesReport();
   }
-  
-  elements.avgIncome.textContent = formatCurrency(Math.round(totalIncome / 12));
-  elements.avgExpense.textContent = formatCurrency(Math.round(totalExpense / 12));
-  
-  if (bestMonthIndex >= 0) {
-    const monthData = financeData[bestMonthIndex];
-    const profit = monthData.income - monthData.expense;
-    elements.bestMonth.textContent = `${bestMonthName}\n+${formatCurrency(profit)}`;
-  } else {
-    elements.bestMonth.textContent = 'Нет данных';
-  }
-  
-  renderMiniCharts();
-  renderTopCategoriesReport();
-}
-
-
 
   // Отображение самых затратных категорий
   function renderTopCategoriesReport() {
@@ -378,108 +376,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     elements.capitalDisplay.textContent = formatCurrency(capital);
-
-    // Обновление бюджета
-    if (budgetData.startDate) {
-        const today = new Date();
-        const budgetStartDate = new Date(budgetData.startDate);
-        
-        if (today.getMonth() === budgetStartDate.getMonth() && 
-            today.getFullYear() === budgetStartDate.getFullYear()) {
-            // Обновляем потраченную сегодня сумму
-            const todayStr = today.toISOString().split('T')[0];
-            if (budgetData.dailyHistory[todayStr]) {
-                budgetData.dailyHistory[todayStr].spentToday = 
-                    Object.values(monthData.categories).reduce((sum, val) => sum + val, 0);
-                localStorage.setItem('budgetData', JSON.stringify(budgetData));
-            }
-        }
-    }
-
+    
+    // Обновление виджета бюджета
     updateBudgetWidget();
-    updateFinancialMetrics();
-    renderWidgets();
+    
+    // Отрисовка всех графиков
     renderAllCharts();
+
+    // Отрисовка виджетов категорий
+    renderWidgets();
+
+    // Отрисовка виджета накоплений
     renderSavingsWidget();
-  }
-
-  // Обновление виджета бюджета
-  function updateBudgetWidget() {
-    if (!budgetData.startDate) {
-        elements.dailyBudgetAmount.textContent = formatCurrency(0);
-        elements.budgetProgress.textContent = 'Не задано';
-        return;
-    }
-
-    const today = new Date();
-    const startDate = new Date(budgetData.startDate);
-    const todayStr = today.toISOString().split('T')[0];
-
-    // Проверяем, что бюджет установлен в текущем месяце
-    if (today.getMonth() !== startDate.getMonth() || 
-        today.getFullYear() !== startDate.getFullYear()) {
-        elements.dailyBudgetAmount.textContent = formatCurrency(0);
-        elements.budgetProgress.textContent = 'Срок истек';
-        return;
-    }
-
-    // Рассчитываем прошедшие дни (включая текущий)
-    const elapsedDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
-    const remainingDays = Math.max(0, budgetData.days - elapsedDays + 1);
-
-    if (remainingDays <= 0) {
-        elements.dailyBudgetAmount.textContent = formatCurrency(0);
-        elements.budgetProgress.textContent = 'Срок истек';
-        return;
-    }
-
-    // Получаем данные о расходах за текущий месяц
-    const monthData = financeData[currentMonth] || { income: 0, expense: 0, categories: {} };
-    const totalSpent = monthData.expense || 0;
-
-    // Рассчитываем дневной бюджет
-    let dailyBudget = 0;
-    let remainingAmount = budgetData.totalAmount - totalSpent;
-
-    if (remainingAmount <= 0) {
-        dailyBudget = 0;
-    } else {
-        // Если сегодняшний день уже есть в истории, используем его данные
-        if (budgetData.dailyHistory[todayStr]) {
-            const todayBudget = budgetData.dailyHistory[todayStr];
-            const availableToday = Math.max(0, todayBudget.dailyBudget - todayBudget.spentToday);
-            
-            if (availableToday > 0) {
-                dailyBudget = availableToday;
-            } else {
-                // Если сегодняшний лимит исчерпан, распределяем остаток на оставшиеся дни
-                const remainingAfterToday = remainingAmount - todayBudget.dailyBudget;
-                dailyBudget = remainingAfterToday > 0 ? remainingAfterToday / (remainingDays - 1) : 0;
-            }
-        } else {
-            // Первый день использования бюджета
-            dailyBudget = remainingAmount / remainingDays;
-            
-            // Сохраняем данные на сегодня
-            budgetData.dailyHistory[todayStr] = {
-                date: todayStr,
-                dailyBudget: dailyBudget,
-                spentToday: 0
-            };
-            localStorage.setItem('budgetData', JSON.stringify(budgetData));
-        }
-    }
-
-    // Форматируем вывод
-    elements.dailyBudgetAmount.textContent = formatCurrency(dailyBudget);
-    elements.budgetProgress.textContent = `${remainingDays} дн. осталось (${elapsedDays}/${budgetData.days})`;
-
-    // Обновляем историю ежедневных трат
-    if (budgetData.dailyHistory[todayStr]) {
-        budgetData.dailyHistory[todayStr].spentToday = 
-            Object.values(monthData.categories).reduce((sum, val) => sum + val, 0);
-        localStorage.setItem('budgetData', JSON.stringify(budgetData));
-    }
   }
 
   // Отрисовка всех графиков
@@ -584,13 +492,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const expenseVal = parseFloat(input.value.replace(/\s+/g, '').replace(',', '.'));
     const monthData = financeData[currentMonth] || { income: 0, expense: 0, categories: {} };
 
-    if (!isNaN(expenseVal)) {
+    if (!isNaN(expenseVal) && expenseVal > 0) {
       monthData.expense += expenseVal;
       monthData.categories[category] = (monthData.categories[category] || 0) + expenseVal;
       input.value = '';
       
       financeData[currentMonth] = monthData;
       saveData();
+      
+      // Обновляем дневные траты в бюджете
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+      
+      if (budgetData.startDate && budgetData.dailyHistory[todayStr]) {
+        budgetData.dailyHistory[todayStr].spentToday += expenseVal;
+        localStorage.setItem('budgetData', JSON.stringify(budgetData));
+      }
+      
       updateUI();
       
       const btn = input.nextElementSibling;
@@ -819,6 +737,74 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 3000);
   }
 
+  // Функция обновления виджета бюджета (ИСПРАВЛЕННАЯ ВЕРСИЯ)
+  function updateBudgetWidget() {
+    if (!budgetData.startDate) {
+      elements.dailyBudgetAmount.textContent = formatCurrency(0);
+      elements.budgetProgress.textContent = 'Не задано';
+      return;
+    }
+
+    const today = new Date();
+    const startDate = new Date(budgetData.startDate);
+    const todayStr = today.toISOString().split('T')[0];
+    
+    // Проверяем, что бюджет в текущем месяце
+    if (today.getMonth() !== startDate.getMonth() || 
+        today.getFullYear() !== startDate.getFullYear()) {
+      elements.dailyBudgetAmount.textContent = formatCurrency(0);
+      elements.budgetProgress.textContent = 'Срок истек';
+      return;
+    }
+
+    // Рассчитываем прошедшие дни (включая текущий)
+    const elapsedDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
+    const remainingDays = Math.max(0, budgetData.days - elapsedDays + 1);
+    
+    if (remainingDays <= 0) {
+      elements.dailyBudgetAmount.textContent = formatCurrency(0);
+      elements.budgetProgress.textContent = 'Срок истек';
+      return;
+    }
+
+    // Рассчитываем остаток бюджета с учетом перерасходов/экономии
+    let remainingAmount = budgetData.totalAmount;
+    
+    for (let i = 0; i < elapsedDays; i++) {
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + i);
+      const dateStr = date.toISOString().split('T')[0];
+      
+      if (budgetData.dailyHistory[dateStr]) {
+        const dailySpent = budgetData.dailyHistory[dateStr].spentToday;
+        remainingAmount -= dailySpent;
+      }
+    }
+
+    if (remainingAmount <= 0) {
+      elements.dailyBudgetAmount.textContent = formatCurrency(0);
+      elements.budgetProgress.textContent = 'Бюджет исчерпан';
+      return;
+    }
+
+    // Рассчитываем дневной бюджет с учетом остатка
+    const dailyBudget = remainingAmount / remainingDays;
+    
+    elements.dailyBudgetAmount.textContent = formatCurrency(dailyBudget);
+    elements.budgetProgress.textContent = 
+      `Остаток: ${formatCurrency(remainingAmount)} | ${remainingDays} дн.`;
+    
+    // Обновляем историю трат
+    if (!budgetData.dailyHistory[todayStr]) {
+      budgetData.dailyHistory[todayStr] = {
+        date: todayStr,
+        dailyBudget: dailyBudget,
+        spentToday: 0
+      };
+    }
+    localStorage.setItem('budgetData', JSON.stringify(budgetData));
+  }
+
   // Настройка обработчиков событий
   function setupEventHandlers() {
     // Добавление дохода
@@ -995,7 +981,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 
-        elements.cancelSavingsBtn.addEventListener('click', () => {
+    elements.cancelSavingsBtn.addEventListener('click', () => {
       elements.savingsModal.classList.remove('show');
     });
 
