@@ -23,14 +23,14 @@
       </div>
       
       <div id="more-menu" class="neumorphic-menu">
-  <div class="widget savings-widget-preview">
-    <h3 style="color: #2ecc71">Накопления</h3>
-    <button id="enable-savings-btn" class="neumorphic-btn primary">Включить виджет</button>
-  </div>
-</div>
+        <div class="widget savings-widget-preview">
+          <h3 style="color: #2ecc71">Накопления</h3>
+          <button id="enable-savings-btn" class="neumorphic-btn primary">Включить виджет</button>
+        </div>
+      </div>
+      
       <div id="settings-menu" class="neumorphic-menu financial-menu">
         <div class="financial-grid">
-         
           <div class="financial-card">
             <h3>Средний доход</h3>
             <p id="avg-income" class="financial-value">0 ₽</p>
@@ -131,10 +131,25 @@
         </div>
         <p id="daily-budget-amount">0 ₽</p>
         <p id="budget-progress">Не задано</p>
-      </div>
-      
-      <div id="budget-settings-menu" class="neumorphic-menu">
-        <button id="set-budget-btn" class="neumorphic-btn">Установить бюджет</button>
+        
+        <!-- Добавленные прогресс-бары -->
+        <div class="budget-progress-container">
+          <div class="progress-info">
+            <span>Дни: </span>
+            <span id="days-progress-value">0%</span>
+          </div>
+          <div class="savings-progress-container">
+            <div class="savings-progress-bar days-progress" style="width: 0%"></div>
+          </div>
+          
+          <div class="progress-info">
+            <span>Средства: </span>
+            <span id="funds-progress-value">0%</span>
+          </div>
+          <div class="savings-progress-container">
+            <div class="savings-progress-bar funds-progress" style="width: 0%"></div>
+          </div>
+        </div>
       </div>
       
       <div id="set-budget-modal" class="neumorphic-menu">
