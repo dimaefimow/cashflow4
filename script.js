@@ -65,8 +65,6 @@ document.addEventListener('DOMContentLoaded', function() {
     dailyBudgetAmount: document.getElementById('daily-budget-amount'),
     budgetProgress: document.getElementById('budget-progress'),
     budgetSettingsBtn: document.getElementById('budget-settings-btn'),
-    budgetSettingsMenu: document.getElementById('budget-settings-menu'),
-    setBudgetBtn: document.getElementById('set-budget-btn'),
     setBudgetModal: document.getElementById('set-budget-modal'),
     budgetAmount: document.getElementById('budget-amount'),
     budgetDays: document.getElementById('budget-days'),
@@ -89,7 +87,11 @@ document.addEventListener('DOMContentLoaded', function() {
     saveSavingsBtn: document.getElementById('save-savings-btn'),
     cancelSavingsBtn: document.getElementById('cancel-savings-btn'),
     closeReportsBtn: document.getElementById('close-reports-btn'),
-    closeCategoryWidget: document.getElementById('close-category-widget')
+    closeCategoryWidget: document.getElementById('close-category-widget'),
+    daysProgressBar: document.querySelector('.days-progress'),
+    fundsProgressBar: document.querySelector('.funds-progress'),
+    daysProgressValue: document.getElementById('days-progress-value'),
+    fundsProgressValue: document.getElementById('funds-progress-value')
   };
 
   // Данные приложения
@@ -379,6 +381,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Обновление виджета бюджета
     updateBudgetWidget();
+    
+    // Обновление финансовых показателей
+    updateFinancialMetrics();
     
     // Отрисовка всех графиков
     renderAllCharts();
@@ -737,11 +742,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 3000);
   }
 
-  // Функция обновления виджета бюджета (ИСПРАВЛЕННАЯ ВЕРСИЯ)
+  // Функция обновления виджета бюджета (с прогресс-барами)
   function updateBudgetWidget() {
     if (!budgetData.startDate) {
       elements.dailyBudgetAmount.textContent = formatCurrency(0);
       elements.budgetProgress.textContent = 'Не задано';
+      if (elements.daysProgressBar) elements.daysProgressBar.style.width = '0%';
+      if (elements.fundsProgressBar) elements.fundsProgressBar.style.width = '0%';
+      if (elements.daysProgressValue) elements.daysProgressValue.textContent = '0%';
+      if (elements.fundsProgressValue) elements.fundsProgressValue.textContent = '0%';
       return;
     }
 
@@ -754,6 +763,10 @@ document.addEventListener('DOMContentLoaded', function() {
         today.getFullYear() !== startDate.getFullYear()) {
       elements.dailyBudgetAmount.textContent = formatCurrency(0);
       elements.budgetProgress.textContent = 'Срок истек';
+      if (elements.daysProgressBar) elements.daysProgressBar.style.width = '100%';
+      if (elements.fundsProgressBar) elements.fundsProgressBar.style.width = '100%';
+      if (elements.daysProgressValue) elements.daysProgressValue.textContent = '100%';
+      if (elements.fundsProgressValue) elements.fundsProgressValue.textContent = '100%';
       return;
     }
 
@@ -764,11 +777,16 @@ document.addEventListener('DOMContentLoaded', function() {
     if (remainingDays <= 0) {
       elements.dailyBudgetAmount.textContent = formatCurrency(0);
       elements.budgetProgress.textContent = 'Срок истек';
+      if (elements.daysProgressBar) elements.daysProgressBar.style.width = '100%';
+      if (elements.fundsProgressBar) elements.fundsProgressBar.style.width = '100%';
+      if (elements.daysProgressValue) elements.daysProgressValue.textContent = '100%';
+      if (elements.fundsProgressValue) elements.fundsProgressValue.textContent = '100%';
       return;
     }
 
     // Рассчитываем остаток бюджета с учетом перерасходов/экономии
     let remainingAmount = budgetData.totalAmount;
+    let totalSpent = 0;
     
     for (let i = 0; i < elapsedDays; i++) {
       const date = new Date(startDate);
@@ -778,12 +796,18 @@ document.addEventListener('DOMContentLoaded', function() {
       if (budgetData.dailyHistory[dateStr]) {
         const dailySpent = budgetData.dailyHistory[dateStr].spentToday;
         remainingAmount -= dailySpent;
+        totalSpent += dailySpent;
       }
     }
 
     if (remainingAmount <= 0) {
       elements.dailyBudgetAmount.textContent = formatCurrency(0);
       elements.budgetProgress.textContent = 'Бюджет исчерпан';
+      const daysProgress = Math.min(100, (elapsedDays / budgetData.days) * 100);
+      if (elements.daysProgressBar) elements.daysProgressBar.style.width = `${daysProgress}%`;
+      if (elements.fundsProgressBar) elements.fundsProgressBar.style.width = '100%';
+      if (elements.daysProgressValue) elements.daysProgressValue.textContent = `${Math.round(daysProgress)}%`;
+      if (elements.fundsProgressValue) elements.fundsProgressValue.textContent = '100%';
       return;
     }
 
@@ -792,7 +816,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
     elements.dailyBudgetAmount.textContent = formatCurrency(dailyBudget);
     elements.budgetProgress.textContent = 
-      `Остаток: ${formatCurrency(remainingAmount)} | ${remainingDays} дн.`;
+        `Остаток: ${formatCurrency(remainingAmount)} | ${remainingDays} дн.`;
+    
+    // Обновляем прогресс-бары
+    const daysProgress = ((elapsedDays - 1) / budgetData.days) * 100;
+    const fundsProgress = (totalSpent / budgetData.totalAmount) * 100;
+    
+    if (elements.daysProgressBar) elements.daysProgressBar.style.width = `${daysProgress}%`;
+    if (elements.fundsProgressBar) elements.fundsProgressBar.style.width = `${fundsProgress}%`;
+    if (elements.daysProgressValue) elements.daysProgressValue.textContent = `${Math.round(daysProgress)}%`;
+    if (elements.fundsProgressValue) elements.fundsProgressValue.textContent = `${Math.round(fundsProgress)}%`;
     
     // Обновляем историю трат
     if (!budgetData.dailyHistory[todayStr]) {
@@ -896,14 +929,9 @@ document.addEventListener('DOMContentLoaded', function() {
       elements.settingsMenu.classList.remove('show');
     });
 
-    // Бюджет
+    // Бюджет - теперь открывается сразу по клику на шестерёнку
     elements.budgetSettingsBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      elements.budgetSettingsMenu.classList.toggle('show');
-    });
-
-    elements.setBudgetBtn.addEventListener('click', () => {
-      elements.budgetSettingsMenu.classList.remove('show');
       elements.setBudgetModal.classList.add('show');
       elements.budgetAmount.value = '';
       elements.budgetDays.value = '';
@@ -1009,10 +1037,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!elements.yearSummary.contains(e.target) && e.target !== elements.settingsBtn) {
         elements.yearSummary.classList.remove('show');
       }
-      if (!elements.budgetSettingsMenu.contains(e.target) && e.target !== elements.budgetSettingsBtn) {
-        elements.budgetSettingsMenu.classList.remove('show');
-      }
-      if (!elements.setBudgetModal.contains(e.target) && e.target !== elements.setBudgetBtn) {
+      if (!elements.setBudgetModal.contains(e.target) && e.target !== elements.budgetSettingsBtn) {
         elements.setBudgetModal.classList.remove('show');
       }
       if (!elements.moreMenu.contains(e.target) && e.target !== elements.moreBtn) {
