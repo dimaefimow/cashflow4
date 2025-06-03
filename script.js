@@ -745,14 +745,14 @@ document.addEventListener('DOMContentLoaded', function() {
   // Функция обновления виджета бюджета (с прогресс-барами)
   function updateBudgetWidget() {
     if (!budgetData.startDate) {
-      elements.dailyBudgetAmount.textContent = formatCurrency(0);
-      elements.budgetProgress.textContent = 'Не задано';
-      if (elements.daysProgressBar) elements.daysProgressBar.style.width = '0%';
-      if (elements.fundsProgressBar) elements.fundsProgressBar.style.width = '0%';
-      if (elements.daysProgressValue) elements.daysProgressValue.textContent = '0%';
-      if (elements.fundsProgressValue) elements.fundsProgressValue.textContent = '0%';
-      return;
-    }
+  elements.dailyBudgetAmount.textContent = formatCurrency(0);
+  elements.budgetProgress.textContent = 'Не задано';
+  if (elements.daysProgressBar) elements.daysProgressBar.style.width = '100%';
+  if (elements.fundsProgressBar) elements.fundsProgressBar.style.width = '100%';
+  if (elements.daysProgressValue) elements.daysProgressValue.textContent = '100%';
+  if (elements.fundsProgressValue) elements.fundsProgressValue.textContent = '100%';
+  return;
+}
 
     const today = new Date();
     const startDate = new Date(budgetData.startDate);
@@ -801,15 +801,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (remainingAmount <= 0) {
-      elements.dailyBudgetAmount.textContent = formatCurrency(0);
-      elements.budgetProgress.textContent = 'Бюджет исчерпан';
-      const daysProgress = Math.min(100, (elapsedDays / budgetData.days) * 100);
-      if (elements.daysProgressBar) elements.daysProgressBar.style.width = `${daysProgress}%`;
-      if (elements.fundsProgressBar) elements.fundsProgressBar.style.width = '100%';
-      if (elements.daysProgressValue) elements.daysProgressValue.textContent = `${Math.round(daysProgress)}%`;
-      if (elements.fundsProgressValue) elements.fundsProgressValue.textContent = '100%';
-      return;
-    }
+  elements.dailyBudgetAmount.textContent = formatCurrency(0);
+  elements.budgetProgress.textContent = 'Бюджет исчерпан';
+  const daysProgress = 100 - Math.min(100, (elapsedDays / budgetData.days) * 100);
+  if (elements.daysProgressBar) elements.daysProgressBar.style.width = `${Math.max(0, daysProgress)}%`;
+  if (elements.fundsProgressBar) elements.fundsProgressBar.style.width = '0%';
+  if (elements.daysProgressValue) elements.daysProgressValue.textContent = `${Math.round(Math.max(0, daysProgress))}%`;
+  if (elements.fundsProgressValue) elements.fundsProgressValue.textContent = '0%';
+  return;
+}
 
     // Рассчитываем дневной бюджет с учетом остатка
     const dailyBudget = remainingAmount / remainingDays;
@@ -819,10 +819,10 @@ document.addEventListener('DOMContentLoaded', function() {
         `Остаток: ${formatCurrency(remainingAmount)} | ${remainingDays} дн.`;
     
     // Обновляем прогресс-бары
-    const daysProgress = ((elapsedDays - 1) / budgetData.days) * 100;
-    const fundsProgress = (totalSpent / budgetData.totalAmount) * 100;
+    const daysProgress = 100 - (((elapsedDays - 1) / budgetData.days) * 100);
+    const fundsProgress = 100 - ((totalSpent / budgetData.totalAmount) * 100);
     
-    if (elements.daysProgressBar) elements.daysProgressBar.style.width = `${daysProgress}%`;
+    if (elements.daysProgressBar) elements.daysProgressBar.style.width = `${daysProgress}`;
     if (elements.fundsProgressBar) elements.fundsProgressBar.style.width = `${fundsProgress}%`;
     if (elements.daysProgressValue) elements.daysProgressValue.textContent = `${Math.round(daysProgress)}%`;
     if (elements.fundsProgressValue) elements.fundsProgressValue.textContent = `${Math.round(fundsProgress)}%`;
