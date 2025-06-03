@@ -66,12 +66,11 @@ header {
 
 /* Theme toggle button */
 .theme-toggle {
-  width: 40px;
-  height: 40px;
+  min-width: 60px;
+  padding: 6px 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
 }
 
 .theme-icon {
@@ -226,9 +225,7 @@ header {
   transform: none;
 }
 
-
-
-/* Добавляем новые стили для виджета категорий */
+/* Стили для виджета категорий */
 .category-widget {
   position: fixed;
   bottom: -100%;
@@ -270,8 +267,6 @@ header {
   flex-direction: column;
   gap: 10px;
 }
-
-/* Остальной CSS остается без изменений */
 
 .financial-menu {
   overflow-x: hidden;   
@@ -412,6 +407,44 @@ header {
   overflow: hidden;
 }
 
+.savings-progress-bar {
+  height: 100%;
+  background: #2ecc71;
+  border-radius: 5px;
+  transition: width 0.5s ease;
+}
+
+/* Стили для виджета бюджета с прогресс-барами */
+.budget-progress-container {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+body.dark .budget-progress-container {
+  border-top-color: rgba(255,255,255,0.1);
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 0.8rem;
+  color: var(--text);
+}
+
+.budget-progress-container .savings-progress-container {
+  margin-bottom: 12px;
+}
+
+.days-progress {
+  background: #3498db;
+}
+
+.funds-progress {
+  background: #2ecc71;
+}
+
 /* Стиль для превью виджета накоплений */
 .savings-widget-preview {
   background: var(--bg);
@@ -443,13 +476,6 @@ header {
   padding: 12px;
   font-weight: 600;
   margin-top: 10px;
-}
-
-.savings-progress-bar {
-  height: 100%;
-  background: #2ecc71;
-  border-radius: 5px;
-  transition: width 0.5s ease;
 }
 
 /* Month selector */
@@ -807,6 +833,14 @@ body.dark .category-item.total {
 
 body.dark .month-categories h5 {
   border-bottom-color: rgba(255,255,255,0.1);
+}
+
+body.dark .budget-progress-container {
+  border-top-color: rgba(255,255,255,0.1);
+}
+
+body.dark .savings-progress-container {
+  background: rgba(255,255,255,0.1);
 }
 
 body.dark .theme-icon {
