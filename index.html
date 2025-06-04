@@ -45,20 +45,24 @@
           </div>
         </div>
         
-        <div class="financial-charts">
-          <div class="financial-chart-container">
-            <h4>Капитализация по месяцам</h4>
-            <canvas id="miniCapitalChart"></canvas>
-          </div>
-          <div class="financial-chart-container">
-            <h4>Расходы по месяцам</h4>
-            <canvas id="miniExpenseChart"></canvas>
+        <div class="mini-charts-container">
+          <div class="financial-charts">
+            <div class="financial-chart-container">
+              <h4>Капитализация по месяцам</h4>
+              <canvas id="miniCapitalChart"></canvas>
+            </div>
+            <div class="financial-chart-container">
+              <h4>Расходы по месяцам</h4>
+              <canvas id="miniExpenseChart"></canvas>
+            </div>
           </div>
         </div>
         
         <div class="top-categories-report">
           <h4>Топ трат категории</h4>
-          <div id="top-categories-list" class="categories-list"></div>
+          <div class="categories-scroll-container">
+            <div id="top-categories-list" class="categories-list"></div>
+          </div>
         </div>
         
         <button id="close-reports-btn" class="neumorphic-btn primary">Закрыть</button>
@@ -132,7 +136,6 @@
         <p id="daily-budget-amount">0 ₽</p>
         <p id="budget-progress">Не задано</p>
         
-        <!-- Добавленные прогресс-бары -->
         <div class="budget-progress-container">
           <div class="progress-info">
             <span>Дни: </span>
