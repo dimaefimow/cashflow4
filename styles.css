@@ -948,7 +948,7 @@ body.dark .theme-icon {
   }
   
   .financial-value {
-    font-size: 1.6rem;
+    font-size: 1.2rem;
   }
   
   .financial-chart-container h4 {
@@ -1037,8 +1037,7 @@ body.dark .theme-icon {
   }
   
   .financial-chart-container {
-    min-width: 280px;
-    flex-shrink: 0;
+    min-width: 240px;
   }
   
   .financial-chart-container canvas {
@@ -1053,8 +1052,7 @@ body.dark .theme-icon {
   }
   
   .month-categories {
-    min-width: 250px;
-    flex-shrink: 0;
+    min-width: 200px;
   }
   
   .top-categories-report {
@@ -1076,8 +1074,8 @@ body.dark .theme-icon {
 
 /* Small mobile devices */
 @media (max-width: 400px) {
-  .widgets {
-    grid-template-columns: 1fr;
+  .financial-charts {
+    min-width: 500px;
   }
   
   .summary {
@@ -1113,7 +1111,10 @@ body.dark .theme-icon {
   }
   
   #top-categories-list {
-    min-width: 400px;
+    min-width: 500px;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 15px;
   }
   
   .month-categories {
