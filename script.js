@@ -819,9 +819,9 @@ document.addEventListener('DOMContentLoaded', function() {
       `Остаток: ${formatCurrency(remainingAmount)} | ${remainingDays} дн.`;
   
   // Обновляем прогресс-бары (реверсивные)
-  const daysProgress = 100 - (elapsedDays / budgetData.days * 100);
-  const fundsProgress = 100 - (totalSpent / budgetData.totalAmount * 100);
-  
+  const daysProgress = Math.max(0, 100 - (elapsedDays / budgetData.days * 100));
+const fundsProgress = Math.max(0, 100 - (totalSpent / budgetData.totalAmount * 100));
+
   if (elements.daysProgressBar) elements.daysProgressBar.style.width = `${Math.max(0, daysProgress)}%`;
   if (elements.fundsProgressBar) elements.fundsProgressBar.style.width = `${Math.max(0, fundsProgress)}%`;
   if (elements.daysProgressValue) elements.daysProgressValue.textContent = `${Math.round(Math.max(0, daysProgress))}%`;
