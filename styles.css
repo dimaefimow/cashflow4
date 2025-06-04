@@ -938,9 +938,10 @@ body.dark .theme-icon {
   }
   
   .financial-charts {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-  }
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
   
   .financial-card h3 {
     font-size: 1.1rem;
@@ -993,10 +994,11 @@ body.dark .theme-icon {
 
 /* Mobile adaptation */
 @media (max-width: 767px) {
-  header {
-    flex-direction: column;
+  .financial-charts {
+    display: flex;
+    flex-wrap: nowrap;
     gap: 15px;
-    padding-top: 15px;
+    min-width: 600px;
   }
   
   .header-buttons {
