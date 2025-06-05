@@ -7,6 +7,18 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <div class="tutorial-overlay" id="tutorial-overlay">
+    <div class="tutorial-box" id="tutorial-box">
+      <h3 id="tutorial-title">Заголовок обучения</h3>
+      <p id="tutorial-text">Текст обучения...</p>
+      <div class="tutorial-nav">
+        <button id="tutorial-prev" class="neumorphic-btn small">Назад</button>
+        <button id="tutorial-next" class="neumorphic-btn primary small">Далее</button>
+        <button id="tutorial-close" class="neumorphic-btn small">Пропустить</button>
+      </div>
+    </div>
+  </div>
+
   <div class="app">
     <header>
       <div class="header-container">
@@ -27,6 +39,23 @@
           <h3 style="color: #2ecc71">Накопления</h3>
           <button id="enable-savings-btn" class="neumorphic-btn primary">Включить виджет</button>
         </div>
+        <button id="year-select-btn" class="neumorphic-btn primary">Выбрать год</button>
+        <button id="history-btn" class="neumorphic-btn primary">История трат</button>
+      </div>
+      
+      <div id="year-select-modal" class="neumorphic-menu">
+  <h3>Выберите год</h3>
+  <div id="years-list" class="year-list"></div>
+  <div class="button-group">
+    <button id="add-year-btn" class="neumorphic-btn primary">Добавить</button>
+    <button id="close-year-select" class="neumorphic-btn">Закрыть</button>
+  </div>
+</div>
+      
+      <div id="history-modal" class="neumorphic-menu">
+        <h3>История трат</h3>
+        <div id="history-list"></div>
+        <button id="close-history" class="neumorphic-btn">Закрыть</button>
       </div>
       
       <div id="settings-menu" class="neumorphic-menu financial-menu">
@@ -42,6 +71,14 @@
           <div class="financial-card">
             <h3>Лучший месяц</h3>
             <p id="best-month" class="financial-value">Нет данных</p>
+          </div>
+          <div class="financial-card">
+            <h3>Общий доход</h3>
+            <p id="total-income" class="financial-value">0 ₽</p>
+          </div>
+          <div class="financial-card">
+            <h3>Общий расход</h3>
+            <p id="total-expense" class="financial-value">0 ₽</p>
           </div>
         </div>
         
@@ -118,6 +155,7 @@
         <button class="month-tab neumorphic-btn" data-month="10">Ноя</button>
         <button class="month-tab neumorphic-btn" data-month="11">Дек</button>
       </div>
+      <div id="current-year-display" class="year-display" style="text-align: center; margin-top: 10px; font-weight: bold;"></div>
     </section>
 
     <section class="inputs">
@@ -174,10 +212,19 @@
     </section>
     
     <section class="widgets" id="widgets"></section>
+<div id="savings-widgets-container"></div>
+</section>
     
     <section class="charts">
       <div class="chart-container">
         <canvas id="barChart"></canvas>
+      </div>
+    </section>
+    
+    <section class="category-trends">
+      <h3>Динамика трат по категориям</h3>
+      <div class="trends-container">
+        <div class="trends-scroll" id="trends-scroll"></div>
       </div>
     </section>
 
@@ -193,6 +240,8 @@
         <canvas id="yearCapitalChart"></canvas>
       </div>
       <button id="close-year-summary" class="neumorphic-btn">Закрыть</button>
+      <button id="add-savings-widget" class="neumorphic-btn primary">Добавить накопления</button>
+
     </div>
   </div>
 
